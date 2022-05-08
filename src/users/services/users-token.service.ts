@@ -1,0 +1,28 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@entities';
+
+@Injectable()
+export class UsersTokenService {
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  async getTokens(user: User) {
+    const payload = { email: user.email, sub: user.user_id };
+    const [at, rt] = await Promise.all([
+      this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('TOKEN_KEY'),
+        expiresIn: '1d',
+      }),
+      this.jwtService.sign(payload, {
+        secret: this.configService.get<string>('REFRESH_TOKEN_KEY'),
+        expiresIn: '7d',
+      }),
+    ]);
+
+    return { access_token: at, refresh_token: rt };
+  }
+}

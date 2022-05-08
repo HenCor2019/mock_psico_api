@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  hiring:
+    container_name: psico_api
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    volumes: 
+      - ".:/usr/src/app"
+      - "/usr/src/app/node_modules"
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres_psico
+    image: postgres:12
+    restart: always
+    volumes:
+      - /private/var/lib/postgresql:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=hencor
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=psico_db
+  pgadmin:
+    container_name: pg_admin_psico
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=henry200amaya@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=hencor2019
+    ports:
+      - 8080:80
+    depends_on:
+    - postgres
