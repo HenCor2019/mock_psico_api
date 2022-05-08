@@ -1,8 +1,8 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 
 export const config = new DocumentBuilder()
-  .setTitle('Hiripi')
-  .setDescription('The api to manage every hire internal process')
+  .setTitle('Psico amigos')
+  .setDescription('The pre api to manage psico amigos app')
   .setVersion('1.0.0')
   .addBearerAuth()
   .build();
