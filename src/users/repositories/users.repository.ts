@@ -4,7 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '@users/dto';
 import { ILike, Repository } from 'typeorm';
 
-type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
+//type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
+type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
+  ? Omit<T, 'password'>
+  : never) & { hashPassword: string; photo: string };
 
 @Injectable()
 export class UsersRepository {

@@ -25,11 +25,9 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto, file: MulterFile) {
-    console.log({ createUserDto, file });
     const { password } = createUserDto;
     const hashPassword = await this.userHashService.hashData(password);
     const { url: photo } = await this.cloudinaryServices.upload(file.path);
-    console.log({ ...createUserDto, hashPassword, photo });
     return this.usersRepository.save({ ...createUserDto, hashPassword, photo });
   }
 
@@ -70,14 +68,10 @@ export class UsersService {
 
   async login(userToLogin: GoogleUser) {
     const user = await this.usersRepository.findByEmail(userToLogin.email);
-    if (!user) {
-      throw new LoginException();
-    }
 
-    const updatedUser =
-      user.photo === UserProfile.PHOTO
-        ? await this.usersRepository.updateUserPhoto(user, userToLogin.photo)
-        : user;
+    const updatedUser = await (user
+      ? this.usersRepository.save({ ...userToLogin, hashPassword: null })
+      : this.usersRepository.updateUserPhoto(user, userToLogin.photo));
 
     return await this.updateUserTokens(updatedUser);
   }
