@@ -11,7 +11,7 @@ import { Role } from './Role.entity';
 @Entity('Users')
 export class User {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  userId: number;
 
   @Expose()
   @Column({ length: 50 })
@@ -21,12 +21,16 @@ export class User {
   @Column({ length: 50 })
   email: string;
 
+  @Exclude()
+  @Column({ length: 200 })
+  hashPassword: string;
+
   @Expose()
   @Column({ length: 150 })
   photo: string;
 
   @Exclude()
-  @Column({ default: null })
+  @Column({ default: null, length: 200 })
   hashRefreshToken: string;
 
   @Expose()

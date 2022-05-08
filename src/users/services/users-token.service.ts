@@ -11,7 +11,7 @@ export class UsersTokenService {
   ) {}
 
   async getTokens(user: User) {
-    const payload = { email: user.email, sub: user.user_id };
+    const payload = { email: user.email, sub: user.userId };
     const [at, rt] = await Promise.all([
       this.jwtService.sign(payload, {
         secret: this.configService.get<string>('TOKEN_KEY'),

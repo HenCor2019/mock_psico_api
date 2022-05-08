@@ -15,6 +15,7 @@ import { GoogleStrategy } from '@common/strategies';
 
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
+import { CloudinaryService } from 'src/libs';
 
 @Module({
   imports: [JwtModule.register({}), PassportModule, UsersModule, RolesModule],
@@ -25,6 +26,7 @@ import { AuthController } from './controllers/auth.controller';
     GoogleStrategy,
     UsersTokenService,
     UsersHashService,
+    CloudinaryService,
   ],
   exports: [AuthService, GoogleStrategy],
 })

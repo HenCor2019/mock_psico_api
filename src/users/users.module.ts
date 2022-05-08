@@ -7,9 +7,14 @@ import { Role, User } from '@entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { CloudinaryService } from 'src/libs';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
+    MulterModule.register({
+      dest: './upload',
+    }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -28,6 +33,7 @@ import { JwtModule } from '@nestjs/jwt';
     UsersRepository,
     UsersHashService,
     UsersTokenService,
+    CloudinaryService,
   ],
   exports: [UsersService, UsersRepository],
 })

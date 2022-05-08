@@ -2,14 +2,18 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { User } from '@entities';
 
-import { CreateUserDto, UpdateUserDto } from '@users/dto';
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 
 import { UserProfile } from '@common/enums';
 import { GoogleUser } from '@common/interfaces';
+import { UsersTokenService } from './users-token.service';
+
+import { MulterFile } from '@common/types';
 
 import { UsersHashService } from './users-hash.service';
-import { UsersTokenService } from './users-token.service';
+import { CloudinaryService } from 'src/libs';
+import { LoginException, UserNotFoundException } from '@common/exceptions';
 
 @Injectable()
 export class UsersService {
@@ -17,10 +21,16 @@ export class UsersService {
     private readonly usersRepository: UsersRepository,
     private readonly usersTokenService: UsersTokenService,
     private readonly userHashService: UsersHashService,
+    private readonly cloudinaryServices: CloudinaryService,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto, file: MulterFile) {
+    console.log({ createUserDto, file });
+    const { password } = createUserDto;
+    const hashPassword = await this.userHashService.hashData(password);
+    const { url: photo } = await this.cloudinaryServices.upload(file.path);
+    console.log({ ...createUserDto, hashPassword, photo });
+    return this.usersRepository.save({ ...createUserDto, hashPassword, photo });
   }
 
   async updateUserTokens(user: User) {
@@ -32,7 +42,22 @@ export class UsersService {
       ...user,
       hashRefreshToken: hashedToken,
     });
+
     return tokens;
+  }
+
+  async localLogin(userToLogin: LoginUserDto) {
+    const user = await this.usersRepository.findByEmail(userToLogin.email);
+    const matchPassword = await this.userHashService.compareData(
+      userToLogin.password,
+      user?.hashPassword,
+    );
+
+    if (!(user && matchPassword)) {
+      throw new LoginException();
+    }
+
+    return await this.updateUserTokens(user);
   }
 
   findAll() {
@@ -46,7 +71,7 @@ export class UsersService {
   async login(userToLogin: GoogleUser) {
     const user = await this.usersRepository.findByEmail(userToLogin.email);
     if (!user) {
-      throw new ForbiddenException('Access denied');
+      throw new LoginException();
     }
 
     const updatedUser =

@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '@users/dto';
 import { ILike, Repository } from 'typeorm';
 
+type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
+
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -13,13 +15,13 @@ export class UsersRepository {
 
   async find() {
     return this.repository.find({
-      relations: ['roles', 'openings', 'candidates', 'company_id'],
+      relations: ['roles'],
     });
   }
 
   async findById(userId: number) {
     return this.repository.findOne(userId, {
-      relations: ['roles', 'openings', 'candidates', 'company_id'],
+      relations: ['roles'],
     });
   }
 
@@ -27,7 +29,7 @@ export class UsersRepository {
     return this.repository.findOne(
       { email: ILike(email) },
       {
-        relations: ['roles', 'openings', 'candidates', 'company_id'],
+        relations: ['roles'],
       },
     );
   }
@@ -36,7 +38,7 @@ export class UsersRepository {
     return this.repository.save({ ...user, photo: newPhoto });
   }
 
-  async save(userToSave: CreateUserDto) {
+  async save(userToSave: UserToSave) {
     const newUser = this.repository.create({
       ...userToSave,
     });
