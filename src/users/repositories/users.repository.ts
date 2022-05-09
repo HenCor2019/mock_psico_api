@@ -28,6 +28,15 @@ export class UsersRepository {
     });
   }
 
+  async findMyInformation(id: number) {
+    return this.repository.findOne(
+      { userId: id },
+      {
+        relations: ['roles', 'medals', 'testimonials', 'tips'],
+      },
+    );
+  }
+
   async findByEmail(email: string) {
     return this.repository.findOne(
       { email: ILike(email) },

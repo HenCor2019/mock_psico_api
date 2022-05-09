@@ -6,3 +6,4 @@ export * from './Testimony.entity';
 export * from './Goal.entity';
 export * from './Binnacle.entity';
 export * from './Mood.entity';
+export * from './Medal.entity';

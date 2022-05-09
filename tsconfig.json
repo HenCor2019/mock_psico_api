@@ -23,6 +23,7 @@
       "@goals/*": ["src/goals/*"],
       "@categories/*": ["src/categories/*"],
       "@binnacles/*": ["src/binnacles/*"],
+      "@medals/*": ["src/medals/*"],
       "@roles/*": ["src/roles/*"],
     },
     "incremental": true,

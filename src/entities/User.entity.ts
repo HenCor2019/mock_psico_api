@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Binnacle } from './Binnacle.entity';
 import { Goal } from './Goal.entity';
+import { Medal } from './Medal.entity';
 import { Role } from './Role.entity';
 import { Testimony } from './Testimony.entity';
 import { Tip } from './Tip.entity';
@@ -58,6 +59,11 @@ export class User {
   @ManyToMany(() => Role)
   @JoinTable()
   roles: Role[];
+
+  @Expose()
+  @ManyToMany(() => Medal)
+  @JoinTable()
+  medals: Medal[];
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

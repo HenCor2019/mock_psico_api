@@ -1,16 +1,20 @@
 import { Expose } from 'class-transformer';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('Categories')
-export class Category {
+@Entity('Medals')
+export class Medal {
   @PrimaryGeneratedColumn()
-  categoryId: number;
+  medalId: number;
 
   @Expose()
   @Column({ length: 50 })
-  name: string;
+  medal: string;
 
-  constructor(partial: Partial<Category>) {
+  @Expose()
+  @Column({ length: 200 })
+  thumbnail: string;
+
+  constructor(partial: Partial<Medal>) {
     Object.assign(this, partial);
   }
 }

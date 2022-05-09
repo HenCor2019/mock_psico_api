@@ -13,8 +13,8 @@ export class Binnacle {
   thought: string;
 
   @Expose()
-  @Column({ type: 'date', default: new Date(new Date().setHours(0, 0, 0, 0)) })
-  date: Date;
+  @Column({ type: 'date' })
+  binnacleDate: Date;
 
   @Expose()
   @ManyToOne(() => User, (user) => user.binnacles, {

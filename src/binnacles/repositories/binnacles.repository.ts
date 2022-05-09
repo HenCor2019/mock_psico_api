@@ -19,7 +19,10 @@ export class BinnaclesRepository {
   ) {}
 
   create(binnacleToSave: BinnacleToSave) {
-    const newBinnacle = this.binnacleRepository.create({ ...binnacleToSave });
+    const newBinnacle = this.binnacleRepository.create({
+      ...binnacleToSave,
+      binnacleDate: new Date(new Date().setHours(0, 0, 0, 0)),
+    });
     return this.binnacleRepository.save(newBinnacle);
   }
 
@@ -40,7 +43,7 @@ export class BinnaclesRepository {
   findCurrentBinnacle() {
     return this.binnacleRepository.findOne({
       where: {
-        date: new Date(new Date().setHours(0, 0, 0, 0)),
+        binnacleDate: new Date(new Date().setHours(0, 0, 0, 0)),
       },
     });
   }

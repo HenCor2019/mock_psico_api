@@ -18,6 +18,7 @@ import {
   UserNotFoundException,
 } from '@common/exceptions';
 import { RolesService } from '@roles/services/roles.service';
+import { MedalsService } from '@medals/services/medals.service';
 
 @Injectable()
 export class UsersService {
@@ -27,6 +28,7 @@ export class UsersService {
     private readonly userHashService: UsersHashService,
     private readonly cloudinaryServices: CloudinaryService,
     private readonly rolesService: RolesService,
+    private readonly medalsService: MedalsService,
   ) {}
 
   async create(createUserDto: CreateUserDto, file: MulterFile) {
@@ -77,6 +79,14 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
+  async findMyInformation(id: number) {
+    const information = await this.usersRepository.findMyInformation(id);
+    if (!information) {
+      throw new UserNotFoundException();
+    }
+    return information;
+  }
+
   async login(userToLogin: GoogleUser) {
     const user = await this.usersRepository.findByEmail(userToLogin.email);
 
@@ -108,6 +118,20 @@ export class UsersService {
       ...user,
       roles: newRoles,
     });
+  }
+
+  async grantMedal(user: User, medalName: string) {
+    if (this.medalsService.hasMedal(user, medalName)) {
+      return { adquired: true };
+    }
+
+    const medal = await this.medalsService.findByName(medalName);
+    await this.usersRepository.update({
+      ...user,
+      medals: [...user.medals, medal],
+    });
+
+    return { adquired: true };
   }
 
   async revokeRoles(userId: number, rolesToRevoke: string[]) {

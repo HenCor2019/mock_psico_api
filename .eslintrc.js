@@ -17,6 +17,7 @@ module.exports = {
           ['@tips', 'src/tips/'],
           ['@testimonials', 'src/testimonials/'],
           ['@goals', 'src/goals/'],
+          ['@medals', 'src/medals/'],
           ['@categories', 'src/categories/'],
           ['@roles', 'src/roles/'],
         ],

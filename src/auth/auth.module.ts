@@ -16,9 +16,16 @@ import { GoogleStrategy } from '@common/strategies';
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { CloudinaryService } from 'src/libs';
+import { MedalsModule } from '@medals/medals.module';
 
 @Module({
-  imports: [JwtModule.register({}), PassportModule, UsersModule, RolesModule],
+  imports: [
+    JwtModule.register({}),
+    PassportModule,
+    UsersModule,
+    RolesModule,
+    MedalsModule,
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,

@@ -3,7 +3,7 @@ import { UsersService } from '@users/services/users.service';
 import { UsersController } from '@users/controllers/users.controller';
 import { UsersRepository } from '@users/repositories/users.repository';
 import { UsersHashService, UsersTokenService } from './services';
-import { Category, Goal, Role, Tip, User } from '@entities';
+import { Category, Goal, Medal, Role, Tip, User } from '@entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -23,8 +23,9 @@ import { TipsModule } from '@tips/tips.module';
 import { GoalsService } from '@goals/services/goals.service';
 import { GoalsRepository } from '@goals/repositories/goals.repository';
 import { GoalsModule } from '@goals/goals.module';
-import { BinnaclesController } from '@binnacles/controllers/binnacles.controller';
-import { BinnaclesModule } from '@binnacles/binnacles.module';
+import { MedalsModule } from '@medals/medals.module';
+import { MedalsService } from '@medals/services/medals.service';
+import { MedalsRepository } from '@medals/repositories/medals.repository';
 
 @Module({
   imports: [
@@ -41,11 +42,9 @@ import { BinnaclesModule } from '@binnacles/binnacles.module';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Role, Category, Tip, Goal]),
+    TypeOrmModule.forFeature([User, Role, Category, Tip, Goal, Medal]),
     RolesModule,
-    TestimonialsModule,
-    TipsModule,
-    GoalsModule,
+    MedalsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -57,13 +56,8 @@ import { BinnaclesModule } from '@binnacles/binnacles.module';
     RolesService,
     JwtStrategy,
     JwtRefreshStrategy,
-    TestimonialsService,
-    CategoriesService,
-    CategoriesRepository,
-    TipsService,
-    TipsRepository,
-    GoalsService,
-    GoalsRepository,
+    MedalsService,
+    MedalsRepository,
   ],
   exports: [UsersService, UsersRepository],
 })

@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
-import { TipsService } from '@tips/services/tips.service';
-import { TipsRepository } from './repositories/tips.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Category, Tip } from 'src/entities';
+
+import { TipsService } from '@tips/services/tips.service';
+import { TipsController } from '@tips/controllers/tips.controller';
+import { TipsRepository } from '@tips/repositories/tips.repository';
+
+import { Category, Tip } from '@entities';
+
 import { CategoriesService } from '@categories/services/categories.service';
 import { CategoriesRepository } from '@categories/repositories/categories.repository';
 
 @Module({
+  controllers: [TipsController],
   imports: [TypeOrmModule.forFeature([Tip, Category])],
   providers: [
     TipsService,

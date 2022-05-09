@@ -6,6 +6,7 @@ export * from './not-found/not-found-user.exception';
 export * from './not-found/not-found-mood.exception';
 export * from './not-found/incomplete-categories.exception';
 export * from './not-found/incomplete-roles.exception';
+export * from './not-found/incomplete-medals.exception';
 
 export * from './exist/already-exist-binnacle.exception';
 
