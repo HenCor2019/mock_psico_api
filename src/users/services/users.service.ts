@@ -1,11 +1,10 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { User } from '@entities';
 
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 
-import { UserProfile } from '@common/enums';
 import { GoogleUser } from '@common/interfaces';
 import { UsersTokenService } from './users-token.service';
 
@@ -13,7 +12,8 @@ import { MulterFile } from '@common/types';
 
 import { UsersHashService } from './users-hash.service';
 import { CloudinaryService } from 'src/libs';
-import { LoginException, UserNotFoundException } from '@common/exceptions';
+import { LoginException } from '@common/exceptions';
+import { RolesService } from '@roles/services/roles.service';
 
 @Injectable()
 export class UsersService {
@@ -22,13 +22,20 @@ export class UsersService {
     private readonly usersTokenService: UsersTokenService,
     private readonly userHashService: UsersHashService,
     private readonly cloudinaryServices: CloudinaryService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async create(createUserDto: CreateUserDto, file: MulterFile) {
     const { password } = createUserDto;
     const hashPassword = await this.userHashService.hashData(password);
     const { url: photo } = await this.cloudinaryServices.upload(file.path);
-    return this.usersRepository.save({ ...createUserDto, hashPassword, photo });
+    const defaultRole = await this.rolesService.findDefaultRole();
+    return this.usersRepository.save({
+      ...createUserDto,
+      hashPassword,
+      photo,
+      roles: [defaultRole],
+    });
   }
 
   async updateUserTokens(user: User) {
@@ -59,18 +66,23 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.usersRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findById(id: number) {
+    return this.usersRepository.findById(id);
   }
 
   async login(userToLogin: GoogleUser) {
     const user = await this.usersRepository.findByEmail(userToLogin.email);
 
-    const updatedUser = await (user
-      ? this.usersRepository.save({ ...userToLogin, hashPassword: null })
+    const defaultRole = await this.rolesService.findDefaultRole();
+    const updatedUser = await (!user
+      ? this.usersRepository.save({
+          ...userToLogin,
+          hashPassword: '',
+          roles: [defaultRole],
+        })
       : this.usersRepository.updateUserPhoto(user, userToLogin.photo));
 
     return await this.updateUserTokens(updatedUser);

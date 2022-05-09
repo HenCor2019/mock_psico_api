@@ -1,6 +1,6 @@
 export enum Roles {
-  SYSTEM_ADMIN = 'system admin',
-  COMPANY_ADMIN = 'company admin',
-  RECRUITER = 'recruiter',
+  USER = 'User',
+  PSYCHOLOGIST = 'Psychologist',
+  MODERATOR = 'Moderator',
   CANDIDATE = 'candidate',
 }

@@ -1,9 +1,12 @@
-import { Roles } from '@common/enums';
 import { Injectable } from '@nestjs/common';
 import { RolesRepository } from '@roles/repositories/roles.repository';
-import { Role } from '@entities';
 
 @Injectable()
 export class RolesService {
   constructor(private readonly rolesRepository: RolesRepository) {}
+
+  async findDefaultRole() {
+    const DEFAULT_ROLE = 1;
+    return this.rolesRepository.findById(DEFAULT_ROLE);
+  }
 }

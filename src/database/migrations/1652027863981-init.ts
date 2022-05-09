@@ -26,7 +26,7 @@ export class init1652027863981 implements MigrationInterface {
       `ALTER TABLE "users_roles_roles" ADD CONSTRAINT "FK_b5542d4b402c96e89293ded68f7" FOREIGN KEY ("rolesRoleId") REFERENCES "Roles"("role_id") ON DELETE CASCADE ON UPDATE CASCADE`,
     );
     await queryRunner.query(
-      `insert into "Users" (fullname, email, photo, "hashPassword") values ('Hencor', 'henry200amaya@gmail.com', 'https:ppp', 'saas')`,
+      `INSERT INTO "Roles" (role) values ('User'),('Psychologist'),('Moderator'),('Admin')`,
     );
   }
 

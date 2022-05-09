@@ -8,15 +8,20 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
 import { UsersService } from '@users/services';
 import { ValidationFilePipe } from '@common/pipes';
 import { MulterFile } from '@common/types';
 import { User } from '@entities';
 import { FileFormatException } from '@common/exceptions';
+import { Roles } from '@common/decorators';
+import { Roles as AppRoles } from '@common/enums';
+import { JwtAuthGuard, RolesGuard } from '@common/guards';
 
 @ApiTags('Users')
 @Controller('users')
@@ -68,13 +73,16 @@ export class UsersController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   findAll() {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  findById(@Param('id', ParseIntPipe) id: string) {
+    return this.usersService.findById(+id);
   }
 
   @Patch(':id')
