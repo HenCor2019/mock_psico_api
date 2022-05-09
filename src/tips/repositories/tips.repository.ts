@@ -24,4 +24,19 @@ export class TipsRepository {
   async findAll() {
     return this.tipsRepository.find({ relations: ['userId', 'categories'] });
   }
+
+  async findById(id: number) {
+    return this.tipsRepository.findOne(
+      { tipId: id },
+      { relations: ['userId'] },
+    );
+  }
+
+  async update(tipToUpdate: Tip) {
+    return this.tipsRepository.save({ ...tipToUpdate });
+  }
+
+  async remove(tipToRemove: Tip) {
+    this.tipsRepository.remove(tipToRemove);
+  }
 }

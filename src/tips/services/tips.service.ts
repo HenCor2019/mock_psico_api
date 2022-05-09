@@ -3,7 +3,6 @@ import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { TipsRepository } from '@tips/repositories/tips.repository';
 import { User } from '@entities';
 import { CategoriesService } from '@categories/services/categories.service';
-import { reduce } from 'rxjs';
 
 @Injectable()
 export class TipsService {
@@ -40,11 +39,17 @@ export class TipsService {
     }, {});
   }
 
-  update(id: number, updateTipDto: UpdateTipDto) {
-    return `This action updates a #${id} tip`;
+  findById(id: number) {
+    return this.tipsRepository.findById(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} tip`;
+  async update(tipId: number, updateTipDto: UpdateTipDto) {
+    const tip = await this.tipsRepository.findById(tipId);
+    return this.tipsRepository.update({ ...tip, ...updateTipDto });
+  }
+
+  async remove(tipId: number) {
+    const tipToRemove = await this.tipsRepository.findById(tipId);
+    this.tipsRepository.remove(tipToRemove);
   }
 }

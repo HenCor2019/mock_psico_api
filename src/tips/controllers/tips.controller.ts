@@ -8,14 +8,15 @@ import {
   Delete,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { TipsService } from '@tips/services/tips.service';
 import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { User as UserEntity } from '@entities';
 import { User, Roles } from '@common/decorators';
-import { Roles as AppRoles } from '@common/enums';
-import { JwtAuthGuard, RolesGuard } from '@common/guards';
+import { JwtAuthGuard, RolesGuard, TipsPermissionGuard } from '@common/guards';
 
 @ApiTags('Tips')
 @Controller('tips')
@@ -26,29 +27,35 @@ export class TipsController {
   @Roles()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createTipDto: CreateTipDto, @User() user: UserEntity) {
     return this.tipsService.create(user, createTipDto);
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.tipsService.findAll();
   }
 
-  @Patch(':id')
+  @Patch(':tipId')
   @Roles()
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, TipsPermissionGuard)
   @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
   update(
-    @Param('id', ParseIntPipe) id: string,
+    @Param('tipId', ParseIntPipe) id: number,
     @Body() updateTipDto: UpdateTipDto,
-    @User() user: UserEntity,
   ) {
     return this.tipsService.update(+id, updateTipDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(':tipId')
+  @Roles()
+  @UseGuards(JwtAuthGuard, RolesGuard, TipsPermissionGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('tipId', ParseIntPipe) id: number) {
     return this.tipsService.remove(+id);
   }
 }

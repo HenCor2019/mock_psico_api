@@ -87,12 +87,4 @@ export class UsersService {
 
     return await this.updateUserTokens(updatedUser);
   }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
 }
