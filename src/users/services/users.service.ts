@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { User } from '@entities';
+import { Role, User } from '@entities';
 
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
+import { CreateUserDto, LoginUserDto } from '@users/dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 
 import { GoogleUser } from '@common/interfaces';
@@ -12,7 +12,11 @@ import { MulterFile } from '@common/types';
 
 import { UsersHashService } from './users-hash.service';
 import { CloudinaryService } from 'src/libs';
-import { LoginException } from '@common/exceptions';
+import {
+  IncompleteRolesException,
+  LoginException,
+  UserNotFoundException,
+} from '@common/exceptions';
 import { RolesService } from '@roles/services/roles.service';
 
 @Injectable()
@@ -86,5 +90,52 @@ export class UsersService {
       : this.usersRepository.updateUserPhoto(user, userToLogin.photo));
 
     return await this.updateUserTokens(updatedUser);
+  }
+
+  async grantRoles(userId: number, rolesToGrant: string[]) {
+    const roles = await this.rolesService.findMany(rolesToGrant);
+    if (roles.length !== rolesToGrant.length) {
+      throw new IncompleteRolesException();
+    }
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    const newRoles = this.preGrantedRoles(user.roles, roles);
+    return this.usersRepository.update({
+      ...user,
+      roles: newRoles,
+    });
+  }
+
+  async revokeRoles(userId: number, rolesToRevoke: string[]) {
+    const roles = await this.rolesService.findMany(rolesToRevoke);
+    if (roles.length !== rolesToRevoke.length) {
+      throw new IncompleteRolesException();
+    }
+
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    const newRoles = this.preRevokedRoles(user.roles, rolesToRevoke);
+    return this.usersRepository.update({
+      ...user,
+      roles: newRoles,
+    });
+  }
+
+  private preGrantedRoles(currentRoles: Role[], newRoles: Role[]) {
+    return [...currentRoles, ...newRoles].filter(
+      (role, index, self) =>
+        self.findIndex((r) => r.role_id == role.role_id) === index,
+    );
+  }
+
+  private preRevokedRoles(roles: Role[], rolesToRevoke: string[]) {
+    return [...roles].filter((role) => !rolesToRevoke.includes(role.role));
   }
 }

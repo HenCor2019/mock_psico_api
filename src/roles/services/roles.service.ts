@@ -9,4 +9,8 @@ export class RolesService {
     const DEFAULT_ROLE = 1;
     return this.rolesRepository.findById(DEFAULT_ROLE);
   }
+
+  async findMany(roles: string[]) {
+    return this.rolesRepository.find(...roles);
+  }
 }

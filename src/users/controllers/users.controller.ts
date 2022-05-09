@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
+import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
 import { UsersService } from '@users/services';
 import { ValidationFilePipe } from '@common/pipes';
 import { MulterFile } from '@common/types';
@@ -74,14 +74,39 @@ export class UsersController {
 
   @Get()
   @ApiBearerAuth()
-  @Roles(AppRoles.MODERATOR)
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   findAll() {
     return this.usersService.findAll();
   }
 
-  @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: string) {
-    return this.usersService.findById(+id);
+  @Get(':userId')
+  async findById(@Param('userId', ParseIntPipe) id: string) {
+    const user = await this.usersService.findById(+id);
+    return new User({ ...user });
+  }
+
+  @Patch('/:userId/roles')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async grantRoles(
+    @Param('userId', ParseIntPipe) id: number,
+    @Body() updateRolesDto: UpdateRolesDto,
+  ) {
+    const user = await this.usersService.grantRoles(id, updateRolesDto.roles);
+    return new User({ ...user });
+  }
+
+  @Delete('/:userId/roles')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async revokeRoles(
+    @Param('userId', ParseIntPipe) id: number,
+    @Body() updateRolesDto: UpdateRolesDto,
+  ) {
+    const user = await this.usersService.revokeRoles(id, updateRolesDto.roles);
+    return new User({ ...user });
   }
 }
