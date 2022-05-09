@@ -13,6 +13,7 @@ import { MulterFile } from '@common/types';
 import { UsersHashService } from './users-hash.service';
 import { CloudinaryService } from 'src/libs';
 import {
+  AlreadyExistUserException,
   IncompleteRolesException,
   LoginException,
   UserNotFoundException,
@@ -34,8 +35,14 @@ export class UsersService {
   async create(createUserDto: CreateUserDto, file: MulterFile) {
     const { password } = createUserDto;
     const hashPassword = await this.userHashService.hashData(password);
+    const user = await this.usersRepository.findByEmail(createUserDto.email);
+    if (user) {
+      throw new AlreadyExistUserException();
+    }
+
     const { url: photo } = await this.cloudinaryServices.upload(file.path);
     const defaultRole = await this.rolesService.findDefaultRole();
+
     return this.usersRepository.save({
       ...createUserDto,
       hashPassword,
@@ -79,6 +86,10 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
+  findByEmail(email: string) {
+    return this.usersRepository.findByEmail(email);
+  }
+
   async findMyInformation(id: number) {
     const information = await this.usersRepository.findMyInformation(id);
     if (!information) {
@@ -117,6 +128,14 @@ export class UsersService {
     return this.usersRepository.update({
       ...user,
       roles: newRoles,
+    });
+  }
+
+  async updatePassword(user: User, newPassword: string) {
+    const hashPassword = await this.userHashService.hashData(newPassword);
+    return this.usersRepository.update({
+      ...user,
+      hashPassword,
     });
   }
 

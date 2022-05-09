@@ -25,4 +25,12 @@ export class UsersTokenService {
 
     return { access_token: at, refresh_token: rt };
   }
+
+  async getPasswordToken(user: User) {
+    const payload = { email: user.email, sub: user.userId };
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('PASSWORD_RESET_KEY'),
+      expiresIn: '1d',
+    });
+  }
 }

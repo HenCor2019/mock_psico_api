@@ -9,5 +9,6 @@ export * from './not-found/incomplete-roles.exception';
 export * from './not-found/incomplete-medals.exception';
 
 export * from './exist/already-exist-binnacle.exception';
+export * from './exist/already-exist-user.exception';
 
 export * from './login/login.exception';

@@ -11,11 +11,11 @@ import {
 
 import { RolesModule } from '@roles/roles.module';
 
-import { GoogleStrategy } from '@common/strategies';
+import { GoogleStrategy, JwtPasswordStrategy } from '@common/strategies';
 
 import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
-import { CloudinaryService } from 'src/libs';
+import { CloudinaryService, SendGridService } from 'src/libs';
 import { MedalsModule } from '@medals/medals.module';
 
 @Module({
@@ -30,10 +30,13 @@ import { MedalsModule } from '@medals/medals.module';
   providers: [
     AuthService,
     UsersService,
+    UsersTokenService,
     GoogleStrategy,
     UsersTokenService,
+    JwtPasswordStrategy,
     UsersHashService,
     CloudinaryService,
+    SendGridService,
   ],
   exports: [AuthService, GoogleStrategy],
 })
