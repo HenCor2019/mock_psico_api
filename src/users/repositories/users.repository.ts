@@ -24,7 +24,7 @@ export class UsersRepository {
 
   async findById(userId: number) {
     return this.repository.findOne(userId, {
-      relations: ['roles'],
+      relations: ['roles', 'medals', 'testimonials', 'tips'],
     });
   }
 

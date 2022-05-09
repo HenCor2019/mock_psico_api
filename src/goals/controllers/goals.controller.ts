@@ -73,6 +73,19 @@ export class GoalsController {
     return this.goalsService.update(id, updateGoalDto);
   }
 
+  @Patch('me/:goalId/goals/toggle-complete')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, GoalsPermissionGuard)
+  async toggleComplete(@Param('goalId', ParseIntPipe) id: number) {
+    return this.goalsService.toggleComplete(id);
+  }
+
   @Delete('me/:goalId/goals')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()

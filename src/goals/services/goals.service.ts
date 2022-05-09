@@ -27,4 +27,9 @@ export class GoalsService {
     const goal = await this.goalsRepository.findById(id);
     this.goalsRepository.remove(goal);
   }
+
+  async toggleComplete(id: number) {
+    const goal = await this.goalsRepository.findById(id);
+    return this.goalsRepository.update({ ...goal, completed: !goal.completed });
+  }
 }

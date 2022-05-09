@@ -20,8 +20,8 @@ import { UsersService } from '@users/services';
 import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
 
 import { MulterFile } from '@common/types';
-import { Roles } from '@common/decorators';
-import { Roles as AppRoles } from '@common/enums';
+import { Roles, User } from '@common/decorators';
+import { Medals, Roles as AppRoles } from '@common/enums';
 import { ValidationFilePipe } from '@common/pipes';
 import { FileFormatException } from '@common/exceptions';
 import { JwtAuthGuard, RolesGuard } from '@common/guards';
@@ -39,6 +39,14 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('me')
+  @ApiBearerAuth()
+  @Roles(AppRoles.USER, AppRoles.MODERATOR, AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  findMyInformation(@User('userId') id: number) {
+    return this.usersService.findMyInformation(id);
   }
 
   @Post()
@@ -86,7 +94,7 @@ export class UsersController {
     return this.usersService.localLogin(loginUserDto);
   }
 
-  @Patch('/:userId/roles')
+  @Patch(':userId/roles')
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -98,7 +106,7 @@ export class UsersController {
     return new UserEntity({ ...user });
   }
 
-  @Delete('/:userId/roles')
+  @Delete(':userId/roles')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
@@ -109,5 +117,44 @@ export class UsersController {
   ) {
     const user = await this.usersService.revokeRoles(id, updateRolesDto.roles);
     return new UserEntity({ ...user });
+  }
+
+  @Patch('me/medals/tips')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async grantTipsMedal(@User() user: UserEntity) {
+    return this.usersService.grantMedal(user, Medals.TIPS);
+  }
+
+  @Patch('me/medals/testimonials')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async grantTestimonialsMedal(@User() user: UserEntity) {
+    return this.usersService.grantMedal(user, Medals.TESTIMONIALS);
+  }
+
+  @Patch('me/medals/binnacles')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async grantBinnaclesMedal(@User() user: UserEntity) {
+    return this.usersService.grantMedal(user, Medals.BINNACLES);
   }
 }
