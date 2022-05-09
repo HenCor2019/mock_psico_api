@@ -3,7 +3,7 @@ import { UsersService } from '@users/services/users.service';
 import { UsersController } from '@users/controllers/users.controller';
 import { UsersRepository } from '@users/repositories/users.repository';
 import { UsersHashService, UsersTokenService } from './services';
-import { Role, User } from '@entities';
+import { Category, Role, Tip, User } from '@entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -13,6 +13,13 @@ import { RolesService } from '@roles/services/roles.service';
 import { RolesModule } from '@roles/roles.module';
 import { PermissionMiddleware } from '@common/middlewares/permission.middleware';
 import { JwtRefreshStrategy, JwtStrategy } from '@common/strategies';
+import { TestimonialsModule } from '@testimonials/testimonials.module';
+import { TestimonialsService } from '@testimonials/services/testimonials.service';
+import { CategoriesService } from '@categories/services/categories.service';
+import { CategoriesRepository } from '@categories/repositories/categories.repository';
+import { TipsService } from '@tips/services/tips.service';
+import { TipsRepository } from '@tips/repositories/tips.repository';
+import { TipsModule } from '@tips/tips.module';
 
 @Module({
   imports: [
@@ -29,8 +36,10 @@ import { JwtRefreshStrategy, JwtStrategy } from '@common/strategies';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Role]),
+    TypeOrmModule.forFeature([User, Role, Category, Tip]),
     RolesModule,
+    TestimonialsModule,
+    TipsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -42,6 +51,11 @@ import { JwtRefreshStrategy, JwtStrategy } from '@common/strategies';
     RolesService,
     JwtStrategy,
     JwtRefreshStrategy,
+    TestimonialsService,
+    CategoriesService,
+    CategoriesRepository,
+    TipsService,
+    TipsRepository,
   ],
   exports: [UsersService, UsersRepository],
 })

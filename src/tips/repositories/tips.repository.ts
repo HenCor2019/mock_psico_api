@@ -32,6 +32,15 @@ export class TipsRepository {
     );
   }
 
+  async findByUser(user: User) {
+    return this.tipsRepository.find({
+      where: {
+        userId: user,
+      },
+      relations: ['categories'],
+    });
+  }
+
   async update(tipToUpdate: Tip) {
     return this.tipsRepository.save({ ...tipToUpdate });
   }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entities';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesRepository {
@@ -19,6 +19,6 @@ export class CategoriesRepository {
   }
 
   async findMany(categories: string[]) {
-    return Promise.all(categories.map((category) => this.findByName(category)));
+    return this.categoryRepository.find({ name: In(categories) });
   }
 }

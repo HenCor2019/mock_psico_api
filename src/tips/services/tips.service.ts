@@ -43,6 +43,10 @@ export class TipsService {
     return this.tipsRepository.findById(id);
   }
 
+  findByUser(user: User) {
+    return this.tipsRepository.findByUser(user);
+  }
+
   async update(tipId: number, updateTipDto: UpdateTipDto) {
     const tip = await this.tipsRepository.findById(tipId);
     return this.tipsRepository.update({ ...tip, ...updateTipDto });

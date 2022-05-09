@@ -10,6 +10,8 @@ import {
   UploadedFile,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -17,18 +19,40 @@ import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
 import { UsersService } from '@users/services';
 import { ValidationFilePipe } from '@common/pipes';
 import { MulterFile } from '@common/types';
-import { User } from '@entities';
+import { User as UserEntity } from '@entities';
 import { FileFormatException } from '@common/exceptions';
-import { Roles } from '@common/decorators';
+import { Roles, User } from '@common/decorators';
 import { Roles as AppRoles } from '@common/enums';
-import { JwtAuthGuard, RolesGuard } from '@common/guards';
+import {
+  JwtAuthGuard,
+  RolesGuard,
+  TestimonialsPermissionGuard,
+  TipsPermissionGuard,
+} from '@common/guards';
+import { TestimonialsService } from '@testimonials/services/testimonials.service';
+import { CreateTestimonialDto, UpdateTestimonialDto } from '@testimonials/dto';
+import { CreateTipDto, UpdateTipDto } from '@tips/dto';
+import { TipsService } from '@tips/services/tips.service';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly testimonialsService: TestimonialsService,
+    private readonly tipsService: TipsService,
+  ) {}
+
+  @Get()
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  findAll() {
+    return this.usersService.findAll();
+  }
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -64,7 +88,7 @@ export class UsersController {
     @UploadedFile('file', new ValidationFilePipe()) file: MulterFile,
   ) {
     const savedUser = await this.usersService.create(createUserDto, file);
-    return new User({ ...savedUser });
+    return new UserEntity({ ...savedUser });
   }
 
   @Post('login')
@@ -72,21 +96,8 @@ export class UsersController {
     return this.usersService.localLogin(loginUserDto);
   }
 
-  @Get()
-  @ApiBearerAuth()
-  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':userId')
-  async findById(@Param('userId', ParseIntPipe) id: string) {
-    const user = await this.usersService.findById(+id);
-    return new User({ ...user });
-  }
-
   @Patch('/:userId/roles')
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -95,10 +106,11 @@ export class UsersController {
     @Body() updateRolesDto: UpdateRolesDto,
   ) {
     const user = await this.usersService.grantRoles(id, updateRolesDto.roles);
-    return new User({ ...user });
+    return new UserEntity({ ...user });
   }
 
   @Delete('/:userId/roles')
+  @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -107,6 +119,128 @@ export class UsersController {
     @Body() updateRolesDto: UpdateRolesDto,
   ) {
     const user = await this.usersService.revokeRoles(id, updateRolesDto.roles);
-    return new User({ ...user });
+    return new UserEntity({ ...user });
+  }
+
+  @Get('tips')
+  findAllTips() {
+    return this.tipsService.findAll();
+  }
+
+  @Get('me/tips')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async findMyTips(@User() user: UserEntity) {
+    return this.tipsService.findByUser(user);
+  }
+
+  @Post('me/tips')
+  @Roles()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.CREATED)
+  create(@Body() createTipDto: CreateTipDto, @User() user: UserEntity) {
+    return this.tipsService.create(user, createTipDto);
+  }
+
+  @Patch('me/tips/:tipId')
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, TipsPermissionGuard)
+  @ApiBearerAuth()
+  update(
+    @Param('tipId', ParseIntPipe) id: number,
+    @Body() updateTipDto: UpdateTipDto,
+  ) {
+    return this.tipsService.update(+id, updateTipDto);
+  }
+
+  @Delete('me/tips/:tipId')
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, TipsPermissionGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('tipId', ParseIntPipe) id: number) {
+    return this.tipsService.remove(+id);
+  }
+
+  @Get('testimonials')
+  async findAllTestimonials() {
+    return this.testimonialsService.findAll();
+  }
+
+  @Get('me/testimonials')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async findMyTestimonials(@User() user: UserEntity) {
+    return this.testimonialsService.findByUser(user);
+  }
+
+  @Post('me/testimonials')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async createTestimonials(
+    @Body() createTestimonialsDto: CreateTestimonialDto,
+    @User() user: UserEntity,
+  ) {
+    return this.testimonialsService.create(user, createTestimonialsDto);
+  }
+
+  @Patch('me/:testimonialId/testimonials')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, TestimonialsPermissionGuard)
+  async updateTestimonials(
+    @Param('testimonialId', ParseIntPipe) id: number,
+    @Body() updateTestimonialsDto: UpdateTestimonialDto,
+  ) {
+    return this.testimonialsService.update(id, updateTestimonialsDto);
+  }
+
+  @Delete('me/:testimonialId/testimonials')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, TestimonialsPermissionGuard)
+  async removeTestimonials(@Param('testimonialId', ParseIntPipe) id: number) {
+    this.testimonialsService.remove(id);
   }
 }

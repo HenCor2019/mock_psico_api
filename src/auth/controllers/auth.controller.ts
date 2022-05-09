@@ -12,7 +12,7 @@ import { BadRequestSwagger, LoginSwagger } from '@swagger';
 
 import { Request } from 'express';
 
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('api/v1/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
