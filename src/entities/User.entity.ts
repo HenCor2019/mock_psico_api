@@ -4,9 +4,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from './Role.entity';
+import { Testimony } from './Testimony.entity';
+import { Tip } from './Tip.entity';
 
 @Entity('Users')
 export class User {
@@ -32,6 +35,14 @@ export class User {
   @Exclude()
   @Column({ default: null, length: 200 })
   hashRefreshToken: string;
+
+  @Expose()
+  @OneToMany(() => Testimony, (testimony) => testimony.userId)
+  testimonials: Testimony[];
+
+  @Expose()
+  @OneToMany(() => Tip, (tip) => tip.userId)
+  tips: Tip[];
 
   @Expose()
   @ManyToMany(() => Role)

@@ -9,15 +9,12 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const { ROLES_KEY } = process.env;
-    console.log({ ROLES_KEY });
     const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    console.log('------ verifyng roles ----------');
-
-    if (!requiredRoles) {
+    if (!requiredRoles.length) {
       return true;
     }
 

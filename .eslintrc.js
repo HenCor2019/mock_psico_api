@@ -14,6 +14,8 @@ module.exports = {
           ['@app', 'src/app/'],
           ['@auth', 'src/auth/'],
           ['@users', 'src/users/'],
+          ['@tips', 'src/tips/'],
+          ['@categories', 'src/categories/'],
           ['@roles', 'src/roles/'],
         ],
         'extensions': ['.ts']

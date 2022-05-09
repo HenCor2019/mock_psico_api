@@ -1,2 +1,5 @@
 export * from './Role.entity';
 export * from './User.entity';
+export * from './Tip.entity';
+export * from './Category.entity';
+export * from './Testimony.entity';
