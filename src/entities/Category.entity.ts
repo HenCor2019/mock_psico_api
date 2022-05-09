@@ -1,6 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Tip } from './Tip.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Categories')
 export class Category {

@@ -15,24 +15,33 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
+
 import { UsersService } from '@users/services';
-import { ValidationFilePipe } from '@common/pipes';
+import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
+
 import { MulterFile } from '@common/types';
-import { User as UserEntity } from '@entities';
-import { FileFormatException } from '@common/exceptions';
 import { Roles, User } from '@common/decorators';
 import { Roles as AppRoles } from '@common/enums';
+import { ValidationFilePipe } from '@common/pipes';
+import { FileFormatException } from '@common/exceptions';
 import {
+  GoalsPermissionGuard,
   JwtAuthGuard,
   RolesGuard,
   TestimonialsPermissionGuard,
   TipsPermissionGuard,
 } from '@common/guards';
-import { TestimonialsService } from '@testimonials/services/testimonials.service';
+
+import { User as UserEntity } from '@entities';
+
 import { CreateTestimonialDto, UpdateTestimonialDto } from '@testimonials/dto';
+import { TestimonialsService } from '@testimonials/services/testimonials.service';
+
 import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { TipsService } from '@tips/services/tips.service';
+
+import { CreateGoalDto, UpdateGoalDto } from '@goals/dto';
+import { GoalsService } from '@goals/services/goals.service';
 
 @ApiTags('Users')
 @Controller('users')
@@ -41,6 +50,7 @@ export class UsersController {
     private readonly usersService: UsersService,
     private readonly testimonialsService: TestimonialsService,
     private readonly tipsService: TipsService,
+    private readonly goalsService: GoalsService,
   ) {}
 
   @Get()
@@ -242,5 +252,65 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard, TestimonialsPermissionGuard)
   async removeTestimonials(@Param('testimonialId', ParseIntPipe) id: number) {
     this.testimonialsService.remove(id);
+  }
+
+  @Get('me/goals')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async findMyGoals(@User() user: UserEntity) {
+    return this.goalsService.findMyGoals(user);
+  }
+
+  @Post('me/goals')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async createGoals(
+    @Body() createGoalDto: CreateGoalDto,
+    @User() user: UserEntity,
+  ) {
+    return this.goalsService.create(user, createGoalDto);
+  }
+
+  @Patch('me/:goalId/goals')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, GoalsPermissionGuard)
+  async updateGoals(
+    @Param('goalId', ParseIntPipe) id: number,
+    @Body() updateGoalDto: UpdateGoalDto,
+  ) {
+    return this.goalsService.update(id, updateGoalDto);
+  }
+
+  @Delete('me/:goalId/goals')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard, GoalsPermissionGuard)
+  async removeGoals(@Param('goalId', ParseIntPipe) id: number) {
+    this.goalsService.remove(id);
   }
 }

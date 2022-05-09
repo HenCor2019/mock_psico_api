@@ -3,7 +3,7 @@ import { UsersService } from '@users/services/users.service';
 import { UsersController } from '@users/controllers/users.controller';
 import { UsersRepository } from '@users/repositories/users.repository';
 import { UsersHashService, UsersTokenService } from './services';
-import { Category, Role, Tip, User } from '@entities';
+import { Category, Goal, Role, Tip, User } from '@entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
@@ -20,6 +20,9 @@ import { CategoriesRepository } from '@categories/repositories/categories.reposi
 import { TipsService } from '@tips/services/tips.service';
 import { TipsRepository } from '@tips/repositories/tips.repository';
 import { TipsModule } from '@tips/tips.module';
+import { GoalsService } from '@goals/services/goals.service';
+import { GoalsRepository } from '@goals/repositories/goals.repository';
+import { GoalsModule } from '@goals/goals.module';
 
 @Module({
   imports: [
@@ -36,10 +39,11 @@ import { TipsModule } from '@tips/tips.module';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Role, Category, Tip]),
+    TypeOrmModule.forFeature([User, Role, Category, Tip, Goal]),
     RolesModule,
     TestimonialsModule,
     TipsModule,
+    GoalsModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -56,6 +60,8 @@ import { TipsModule } from '@tips/tips.module';
     CategoriesRepository,
     TipsService,
     TipsRepository,
+    GoalsService,
+    GoalsRepository,
   ],
   exports: [UsersService, UsersRepository],
 })

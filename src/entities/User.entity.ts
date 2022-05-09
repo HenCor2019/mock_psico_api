@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Goal } from './Goal.entity';
 import { Role } from './Role.entity';
 import { Testimony } from './Testimony.entity';
 import { Tip } from './Tip.entity';
@@ -43,6 +44,10 @@ export class User {
   @Expose()
   @OneToMany(() => Tip, (tip) => tip.userId)
   tips: Tip[];
+
+  @Expose()
+  @OneToMany(() => Goal, (goal) => goal.userId)
+  goals: Goal[];
 
   @Expose()
   @ManyToMany(() => Role)

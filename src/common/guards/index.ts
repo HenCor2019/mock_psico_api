@@ -4,3 +4,4 @@ export * from './jwt-refresh.guard';
 export * from './roles.guard';
 export * from './tips-permission.guard';
 export * from './testimonials-permission.guard';
+export * from './goals-permission.guard';
