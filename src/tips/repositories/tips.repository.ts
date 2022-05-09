@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Category, Tip, User } from '@entities';
 import { Repository } from 'typeorm';
 
-import { CreateTipDto, UpdateTipDto } from '@tips/dto';
+import { CreateTipDto } from '@tips/dto';
 
 type TipToSave<T = CreateTipDto> = (T extends CreateTipDto
   ? Omit<T, 'categories'>

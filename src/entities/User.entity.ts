@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Binnacle } from './Binnacle.entity';
 import { Goal } from './Goal.entity';
 import { Role } from './Role.entity';
 import { Testimony } from './Testimony.entity';
@@ -48,6 +49,10 @@ export class User {
   @Expose()
   @OneToMany(() => Goal, (goal) => goal.userId)
   goals: Goal[];
+
+  @Expose()
+  @OneToMany(() => Binnacle, (binnacle) => binnacle.userId)
+  binnacles: Binnacle[];
 
   @Expose()
   @ManyToMany(() => Role)

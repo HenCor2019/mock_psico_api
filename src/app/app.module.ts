@@ -1,4 +1,5 @@
 import { AuthModule } from '@auth/auth.module';
+import { BinnaclesModule } from '@binnacles/binnacles.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +17,7 @@ const config = databaseConfig();
     UsersModule,
     TipsModule,
     RolesModule,
+    BinnaclesModule,
   ],
 })
 export class AppModule {}

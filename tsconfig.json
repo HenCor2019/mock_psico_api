@@ -22,6 +22,7 @@
       "@testimonials/*": ["src/testimonials/*"],
       "@goals/*": ["src/goals/*"],
       "@categories/*": ["src/categories/*"],
+      "@binnacles/*": ["src/binnacles/*"],
       "@roles/*": ["src/roles/*"],
     },
     "incremental": true,

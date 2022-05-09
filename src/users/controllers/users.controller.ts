@@ -107,7 +107,6 @@ export class UsersController {
   }
 
   @Patch('/:userId/roles')
-  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)

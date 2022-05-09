@@ -23,6 +23,8 @@ import { TipsModule } from '@tips/tips.module';
 import { GoalsService } from '@goals/services/goals.service';
 import { GoalsRepository } from '@goals/repositories/goals.repository';
 import { GoalsModule } from '@goals/goals.module';
+import { BinnaclesController } from '@binnacles/controllers/binnacles.controller';
+import { BinnaclesModule } from '@binnacles/binnacles.module';
 
 @Module({
   imports: [
