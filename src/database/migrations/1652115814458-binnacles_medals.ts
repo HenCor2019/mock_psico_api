@@ -41,7 +41,7 @@ export class binnaclesMedals1652115814458 implements MigrationInterface {
       `INSERT INTO "Moods" (mood, url) VALUES ('Feliz', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652110070/profiles/image_12_jfo4pc.png'), ('Enojado', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652110070/profiles/image_12_jfo4pc.png'), ('Neutral', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652110070/profiles/image_12_jfo4pc.png'), ('Triste', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652110070/profiles/image_12_jfo4pc.png'), ('Inspirado', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652110070/profiles/image_12_jfo4pc.png')`,
     );
     await queryRunner.query(
-      `INSERT INTO "Medals" (medal, thumbnail) VALUES ('Silver', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652115266/medalA_gi1nu8.png')`,
+      `INSERT INTO "Medals" (medal, thumbnail) VALUES ('Tips', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652115266/medalA_gi1nu8.png'), ('Testimonials', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652115266/medalA_gi1nu8.png'), ('Binnacles', 'https://res.cloudinary.com/dqmkha2os/image/upload/v1652115266/medalA_gi1nu8.png')`,
     );
   }
 
