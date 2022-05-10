@@ -23,7 +23,7 @@ import { CreateGoalDto, UpdateGoalDto } from '@goals/dto';
 import { GoalsService } from '@goals/services/goals.service';
 
 @ApiTags('Goals')
-@Controller('users')
+@Controller('/api/v1/users')
 export class GoalsController {
   constructor(private readonly goalsService: GoalsService) {}
 

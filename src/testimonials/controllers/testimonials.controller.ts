@@ -27,7 +27,7 @@ import { CreateTestimonialDto, UpdateTestimonialDto } from '@testimonials/dto';
 import { TestimonialsService } from '@testimonials/services/testimonials.service';
 
 @ApiTags('Testimonials')
-@Controller('users')
+@Controller('/api/v1/users')
 export class TestimonialsController {
   constructor(private readonly testimonialsService: TestimonialsService) {}
 

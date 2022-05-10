@@ -23,7 +23,7 @@ import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { TipsService } from '@tips/services/tips.service';
 
 @ApiTags('Tips')
-@Controller('users')
+@Controller('/api/v1/users')
 export class TipsController {
   constructor(private readonly tipsService: TipsService) {}
 

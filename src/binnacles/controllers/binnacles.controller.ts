@@ -20,7 +20,7 @@ import {
 import { User as UserEntity } from '@entities';
 
 @ApiTags('Binnacles')
-@Controller('users')
+@Controller('/api/v1/users')
 export class BinnaclesController {
   constructor(private readonly binnaclesService: BinnaclesService) {}
 

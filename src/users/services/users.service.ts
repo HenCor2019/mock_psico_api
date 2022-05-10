@@ -65,11 +65,15 @@ export class UsersService {
   }
 
   async localLogin(userToLogin: LoginUserDto) {
+    console.log({ userToLogin });
     const user = await this.usersRepository.findByEmail(userToLogin.email);
-    const matchPassword = await this.userHashService.compareData(
-      userToLogin.password,
-      user?.hashPassword,
-    );
+    console.log({ user });
+    const matchPassword = user?.hashPassword
+      ? await this.userHashService.compareData(
+          userToLogin.password,
+          user.hashPassword,
+        )
+      : false;
 
     if (!(user && matchPassword)) {
       throw new LoginException();

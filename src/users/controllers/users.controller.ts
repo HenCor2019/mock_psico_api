@@ -29,7 +29,7 @@ import { JwtAuthGuard, RolesGuard } from '@common/guards';
 import { User as UserEntity } from '@entities';
 
 @ApiTags('Users')
-@Controller('users')
+@Controller('/api/v1/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
