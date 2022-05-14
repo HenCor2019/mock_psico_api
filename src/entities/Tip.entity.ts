@@ -5,7 +5,6 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from './Category.entity';
@@ -16,7 +15,7 @@ export class Tip {
   @PrimaryGeneratedColumn()
   tipId: number;
 
-  @Expose()
+  @Expose({ name: 'title' })
   @Column({ length: 200 })
   description: string;
 

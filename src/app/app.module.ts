@@ -19,9 +19,9 @@ const config = databaseConfig();
     UsersModule,
     TipsModule,
     RolesModule,
+    TestimonialsModule,
     BinnaclesModule,
     TipsModule,
-    TestimonialsModule,
     GoalsModule,
   ],
 })

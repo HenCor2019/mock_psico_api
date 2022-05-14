@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { Role, User } from '@entities';
 
@@ -173,6 +173,29 @@ export class UsersService {
       ...user,
       roles: newRoles,
     });
+  }
+
+  async logout(user: User) {
+    await this.usersRepository.update({ ...user, hashRefreshToken: null });
+  }
+
+  async refreshToken(userId: number, refreshToken: string) {
+    const user = await this.findById(userId);
+    if (!(user && user.hashRefreshToken)) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const isMatch = await this.userHashService.compareData(
+      refreshToken,
+      user.hashRefreshToken,
+    );
+
+    if (!isMatch) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    const tokens = await this.updateUserTokens(user);
+    return tokens;
   }
 
   private preGrantedRoles(currentRoles: Role[], newRoles: Role[]) {

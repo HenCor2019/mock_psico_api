@@ -32,7 +32,14 @@ export class UsersRepository {
     return this.repository.findOne(
       { userId: id },
       {
-        relations: ['roles', 'medals', 'testimonials', 'tips'],
+        relations: [
+          'roles',
+          'medals',
+          'testimonials',
+          'testimonials.categories',
+          'tips',
+          'tips.categories',
+        ],
       },
     );
   }

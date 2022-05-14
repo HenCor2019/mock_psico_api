@@ -66,7 +66,7 @@ export class TestimonialsController {
     return this.testimonialsService.create(user, createTestimonialsDto);
   }
 
-  @Patch('me/:testimonialId/testimonials')
+  @Patch('me/testimonials/:testimonialId')
   @ApiBearerAuth()
   @Roles(
     AppRoles.USER,
@@ -82,7 +82,7 @@ export class TestimonialsController {
     return this.testimonialsService.update(id, updateTestimonialsDto);
   }
 
-  @Delete('me/:testimonialId/testimonials')
+  @Delete('me/testimonials/:testimonialId')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiBearerAuth()
   @Roles(

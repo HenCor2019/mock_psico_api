@@ -24,7 +24,7 @@ import { Roles, User } from '@common/decorators';
 import { Medals, Roles as AppRoles } from '@common/enums';
 import { ValidationFilePipe } from '@common/pipes';
 import { FileFormatException } from '@common/exceptions';
-import { JwtAuthGuard, RolesGuard } from '@common/guards';
+import { JwtAuthGuard, JwtRefreshAuthGuard, RolesGuard } from '@common/guards';
 
 import { User as UserEntity } from '@entities';
 
@@ -47,6 +47,36 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   findMyInformation(@User('userId') id: number) {
     return this.usersService.findMyInformation(id);
+  }
+
+  @Delete('me/logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.MODERATOR,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async logout(@User() user: UserEntity) {
+    return this.usersService.logout(user);
+  }
+
+  @Patch('me/refresh-tokens')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.MODERATOR,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtRefreshAuthGuard, RolesGuard)
+  async refreshTokens(
+    @User('userId', ParseIntPipe) id: number,
+    @User('refreshToken') refreshToken: string,
+  ) {
+    return this.usersService.refreshToken(id, refreshToken);
   }
 
   @Post()
