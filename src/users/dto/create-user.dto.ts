@@ -28,6 +28,7 @@ export class CreateUserDto {
     example: '123Admin',
     description: 'The password of the user',
   })
+  @IsNotEmpty()
   @IsString()
   @Length(0, 50)
   password: string;

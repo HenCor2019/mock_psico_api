@@ -22,8 +22,7 @@ export class UsersTokenService {
         expiresIn: '7d',
       }),
     ]);
-
-    return { access_token: at, refresh_token: rt };
+    return { accessToken: at, refreshToken: rt };
   }
 
   async getPasswordToken(user: User) {

@@ -54,7 +54,7 @@ export class UsersService {
   async updateUserTokens(user: User) {
     const tokens = await this.usersTokenService.getTokens(user);
     const hashedToken = await this.userHashService.hashData(
-      tokens.refresh_token,
+      tokens.refreshToken,
     );
     await this.usersRepository.update({
       ...user,
