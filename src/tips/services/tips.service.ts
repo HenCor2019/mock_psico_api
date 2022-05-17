@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { TipsRepository } from '@tips/repositories/tips.repository';
-import { User } from '@entities';
+import { Tip, User } from '@entities';
 import { CategoriesService } from '@categories/services/categories.service';
 
 @Injectable()
@@ -25,18 +25,20 @@ export class TipsService {
   async findAll() {
     const tips = await this.tipsRepository.findAll();
 
-    return tips.reduce((acc, tip) => {
-      const { categories, ...rest } = tip;
-      categories.forEach((category) => {
-        if (acc[category.name]) {
-          acc[category.name] = [...acc[category.name], rest];
-        } else {
-          acc[category.name] = [rest];
-        }
-      });
+    return tips
+      .map((tip) => ({ ...tip, title: tip.description }))
+      .reduce((acc, tip) => {
+        const { categories, ...rest } = tip;
+        categories.forEach((category) => {
+          if (acc[category.name]) {
+            acc[category.name] = [...acc[category.name], rest];
+          } else {
+            acc[category.name] = [rest];
+          }
+        });
 
-      return { ...acc };
-    }, {});
+        return { ...acc };
+      }, {});
   }
 
   findById(id: number) {
