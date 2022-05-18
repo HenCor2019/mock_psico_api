@@ -25,6 +25,10 @@ export class TestimonialsService {
     });
   }
 
+  async findTestimonialsCategories() {
+    return this.categoriesService.findAll();
+  }
+
   async findAll() {
     const testimonials = await this.testimonialsRepository.findAll();
     return testimonials.reduce((acc, testimonial) => {

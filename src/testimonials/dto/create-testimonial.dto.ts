@@ -1,6 +1,6 @@
 import { NotDuplicates } from '@common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class CreateTestimonialDto {
   @ApiProperty({
@@ -8,6 +8,7 @@ export class CreateTestimonialDto {
     example: 'My experience with Alcohol',
     description: 'The testimonial title',
   })
+  @IsNotEmpty()
   @IsString({})
   @Length(0, 50)
   title: string;
@@ -17,6 +18,7 @@ export class CreateTestimonialDto {
     example: 'This is my bad tip',
     description: 'The description of the testimonial',
   })
+  @IsNotEmpty()
   @IsString({})
   @Length(0, 150)
   description: string;
@@ -26,6 +28,7 @@ export class CreateTestimonialDto {
     example: ['Alcohol', 'LSD'],
     description: 'The categories for the testimonial',
   })
+  @IsNotEmpty()
   @IsString({ each: true })
   @NotDuplicates()
   categories: string[];

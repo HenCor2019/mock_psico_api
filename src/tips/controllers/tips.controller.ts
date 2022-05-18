@@ -32,6 +32,11 @@ export class TipsController {
     return this.tipsService.findAll();
   }
 
+  @Get('tips/categories')
+  findTipsCategories() {
+    return this.tipsService.findTipCategories();
+  }
+
   @Get('me/tips')
   @ApiBearerAuth()
   @Roles(

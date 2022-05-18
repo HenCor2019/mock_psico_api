@@ -36,6 +36,11 @@ export class TestimonialsController {
     return this.testimonialsService.findAll();
   }
 
+  @Get('testimonials/categories')
+  async findTestimonialsCategories() {
+    return this.testimonialsService.findTestimonialsCategories();
+  }
+
   @Get('me/testimonials')
   @ApiBearerAuth()
   @Roles(

@@ -22,6 +22,10 @@ export class TipsService {
     });
   }
 
+  async findTipCategories() {
+    return this.categoriesServices.findAll();
+  }
+
   async findAll() {
     const tips = await this.tipsRepository.findAll();
 
