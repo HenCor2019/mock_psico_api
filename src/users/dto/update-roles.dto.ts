@@ -1,6 +1,6 @@
 import { NotDuplicates } from '@common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class UpdateRolesDto {
   @ApiProperty({
@@ -9,6 +9,8 @@ export class UpdateRolesDto {
     description: 'The roles to the users',
   })
   @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @IsString({ each: true })
   @NotDuplicates()
   roles: string[];

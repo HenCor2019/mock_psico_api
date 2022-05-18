@@ -1,6 +1,12 @@
 import { NotDuplicates } from '@common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Length } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class CreateTipDto {
   @ApiProperty({
@@ -17,6 +23,9 @@ export class CreateTipDto {
     example: ['Alcohol', 'LSD'],
     description: 'The categories for the tip',
   })
+  @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @IsString({ each: true })
   @NotDuplicates()
   categories: string[];

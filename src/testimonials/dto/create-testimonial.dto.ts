@@ -1,6 +1,13 @@
 import { NotDuplicates } from '@common/decorators';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  Length,
+  Min,
+} from 'class-validator';
 
 export class CreateTestimonialDto {
   @ApiProperty({
@@ -29,6 +36,8 @@ export class CreateTestimonialDto {
     description: 'The categories for the testimonial',
   })
   @IsNotEmpty()
+  @IsArray()
+  @ArrayMinSize(1)
   @IsString({ each: true })
   @NotDuplicates()
   categories: string[];
