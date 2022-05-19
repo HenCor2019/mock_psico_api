@@ -19,7 +19,7 @@ export class UsersTokenService {
       }),
       this.jwtService.sign(payload, {
         secret: this.configService.get<string>('REFRESH_TOKEN_KEY'),
-        expiresIn: '7d',
+        expiresIn: '1d',
       }),
     ]);
     return { accessToken: at, refreshToken: rt };
@@ -29,7 +29,7 @@ export class UsersTokenService {
     const payload = { email: user.email, sub: user.userId };
     return this.jwtService.sign(payload, {
       secret: this.configService.get<string>('PASSWORD_RESET_KEY'),
-      expiresIn: '1d',
+      expiresIn: '15m',
     });
   }
 }
