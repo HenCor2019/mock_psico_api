@@ -12,14 +12,12 @@ import { CreateUserDto } from './create-user.dto';
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, ['password' as const]),
 ) {
-  @IsNotEmpty()
   @IsOptional()
   @IsString({ message: 'about me must be a string' })
   @MinLength(0, { message: 'about me must be at least one 0' })
   @MaxLength(150, { message: 'about me is too longer' })
   aboutMe?: string;
 
-  @IsNotEmpty()
   @IsOptional()
   @IsString({ message: 'display name must be a string' })
   @MinLength(0, { message: 'display name me must be at least one 0' })
