@@ -17,7 +17,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from '@users/services';
-import { CreateUserDto, LoginUserDto, UpdateRolesDto } from '@users/dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  UpdateRolesDto,
+  UpdateUserDto,
+} from '@users/dto';
 
 import { MulterFile } from '@common/types';
 import { Roles, User } from '@common/decorators';
@@ -122,6 +127,17 @@ export class UsersController {
   @Post('login')
   async login(@Body() loginUserDto: LoginUserDto) {
     return this.usersService.localLogin(loginUserDto);
+  }
+
+  @Patch('')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async updateUser(
+    @Body() updateUserDto: UpdateUserDto,
+    @User() user: UserEntity,
+  ) {
+    return this.usersService.updateUser(user, updateUserDto);
   }
 
   @Patch(':userId/roles')

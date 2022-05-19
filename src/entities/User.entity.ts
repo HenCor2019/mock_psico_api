@@ -24,8 +24,16 @@ export class User {
   fullname: string;
 
   @Expose()
+  @Column({ length: 50, default: '' })
+  displayName: string;
+
+  @Expose()
   @Column({ length: 50 })
   email: string;
+
+  @Expose()
+  @Column({ length: 200, default: '' })
+  aboutMe: string;
 
   @Exclude()
   @Column({ length: 200 })

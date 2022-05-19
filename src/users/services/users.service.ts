@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { Role, User } from '@entities';
 
-import { CreateUserDto, LoginUserDto } from '@users/dto';
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 
 import { GoogleUser } from '@common/interfaces';
@@ -42,11 +42,16 @@ export class UsersService {
 
     const { url: photo } = await this.cloudinaryServices.upload(file.path);
     const defaultRole = await this.rolesService.findDefaultRole();
+    const displayName = createUserDto.fullname
+      .split(' ')
+      .filter((_, index) => index < 2)
+      .join(' ');
 
     return this.usersRepository.save({
       ...createUserDto,
       hashPassword,
       photo,
+      displayName,
       roles: [defaultRole],
     });
   }
@@ -64,10 +69,20 @@ export class UsersService {
     return tokens;
   }
 
+  async updateUser(user: User, userToUpdate: UpdateUserDto) {
+    const userWithEmail = await this.usersRepository.findByEmail(
+      userToUpdate?.email || '',
+    );
+
+    if (userWithEmail && userWithEmail.email !== userToUpdate.email) {
+      throw new AlreadyExistUserException();
+    }
+
+    return this.usersRepository.save({ ...user, ...userToUpdate });
+  }
+
   async localLogin(userToLogin: LoginUserDto) {
-    console.log({ userToLogin });
     const user = await this.usersRepository.findByEmail(userToLogin.email);
-    console.log({ user });
     const matchPassword = user?.hashPassword
       ? await this.userHashService.compareData(
           userToLogin.password,
@@ -106,10 +121,15 @@ export class UsersService {
     const user = await this.usersRepository.findByEmail(userToLogin.email);
 
     const defaultRole = await this.rolesService.findDefaultRole();
+    const displayName = userToLogin.fullname
+      .split(' ')
+      .filter((_, index) => index < 2)
+      .join(' ');
     const updatedUser = await (!user
       ? this.usersRepository.save({
           ...userToLogin,
           hashPassword: '',
+          displayName,
           roles: [defaultRole],
         })
       : this.usersRepository.updateUserPhoto(user, userToLogin.photo));

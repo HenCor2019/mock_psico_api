@@ -7,7 +7,12 @@ import { ILike, Repository } from 'typeorm';
 //type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
 type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
   ? Omit<T, 'password'>
-  : never) & { hashPassword: string; photo: string; roles: Role[] };
+  : never) & {
+  hashPassword: string;
+  photo: string;
+  roles: Role[];
+  displayName: string;
+};
 
 @Injectable()
 export class UsersRepository {
