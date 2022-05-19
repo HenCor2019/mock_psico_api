@@ -129,15 +129,23 @@ export class UsersController {
     return this.usersService.localLogin(loginUserDto);
   }
 
-  @Patch('')
+  @Patch(':userId')
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async updateUser(
     @Body() updateUserDto: UpdateUserDto,
-    @User() user: UserEntity,
+    @Param('userId', ParseIntPipe) userId: number,
   ) {
-    return this.usersService.updateUser(user, updateUserDto);
+    return this.usersService.updateUser(userId, updateUserDto);
+  }
+
+  @Delete(':userId')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async deleteUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.delete(userId);
   }
 
   @Patch(':userId/roles')

@@ -69,16 +69,28 @@ export class UsersService {
     return tokens;
   }
 
-  async updateUser(user: User, userToUpdate: UpdateUserDto) {
-    const userWithEmail = await this.usersRepository.findByEmail(
-      userToUpdate?.email || '',
-    );
+  async updateUser(userId: number, userToUpdate: UpdateUserDto) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
 
-    if (userWithEmail && userWithEmail.email !== userToUpdate.email) {
+    const { email } = userToUpdate;
+    const userWithEmail = await this.usersRepository.findByEmail(email || '');
+    if (userWithEmail && userWithEmail.email !== email) {
       throw new AlreadyExistUserException();
     }
 
     return this.usersRepository.save({ ...user, ...userToUpdate });
+  }
+
+  async delete(userId: number) {
+    const userToDelete = await this.usersRepository.findById(userId);
+    if (!userToDelete) {
+      throw new UserNotFoundException();
+    }
+
+    this.usersRepository.delete(userToDelete);
   }
 
   async localLogin(userToLogin: LoginUserDto) {

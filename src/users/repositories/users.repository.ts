@@ -73,4 +73,8 @@ export class UsersRepository {
   async update(userToUpdate: User) {
     return this.repository.save({ ...userToUpdate });
   }
+
+  async delete(userToDelete: User) {
+    return this.repository.remove({ ...userToDelete });
+  }
 }
