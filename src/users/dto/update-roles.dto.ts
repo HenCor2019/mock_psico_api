@@ -9,8 +9,8 @@ export class UpdateRolesDto {
     description: 'The roles to the users',
   })
   @IsNotEmpty()
-  @IsArray()
-  @ArrayMinSize(1)
+  @IsArray({ message: 'Invalid format for roles' })
+  @ArrayMinSize(1, { message: 'Include at least one role' })
   @IsString({ each: true })
   @NotDuplicates()
   roles: string[];

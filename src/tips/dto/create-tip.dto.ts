@@ -24,8 +24,8 @@ export class CreateTipDto {
     description: 'The categories for the tip',
   })
   @IsNotEmpty()
-  @IsArray()
-  @ArrayMinSize(1)
+  @IsArray({ message: 'Invalid format for categories' })
+  @ArrayMinSize(1, { message: 'Include at least one categories' })
   @IsString({ each: true })
   @NotDuplicates()
   categories: string[];
