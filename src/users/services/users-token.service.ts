@@ -19,7 +19,7 @@ export class UsersTokenService {
       }),
       this.jwtService.sign(payload, {
         secret: this.configService.get<string>('REFRESH_TOKEN_KEY'),
-        expiresIn: '1d',
+        expiresIn: '100d',
       }),
     ]);
     return { accessToken: at, refreshToken: rt };
