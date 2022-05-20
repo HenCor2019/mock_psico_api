@@ -19,6 +19,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
 import { UsersService } from '@users/services';
 import {
+  CreateEmailUserDto,
   CreateUserDto,
   LoginUserDto,
   QueryUserDto,
@@ -217,5 +218,26 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   async grantBinnaclesMedal(@User() user: UserEntity) {
     return this.usersService.grantMedal(user, Medals.BINNACLES);
+  }
+
+  @Post('me/professionals/:professionalId/send-email')
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.MODERATOR,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async sendProfessionalEmail(
+    @User() user: UserEntity,
+    @Param('professionalId', ParseIntPipe) professionalId: number,
+    @Body() createEmailUserDto: CreateEmailUserDto,
+  ) {
+    return this.usersService.requestHelp(
+      user,
+      professionalId,
+      createEmailUserDto.content,
+    );
   }
 }

@@ -73,6 +73,11 @@ export class User {
   @JoinTable()
   medals: Medal[];
 
+  @Expose()
+  @ManyToMany(() => User)
+  @JoinTable()
+  contacts: User[];
+
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }

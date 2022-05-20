@@ -16,7 +16,7 @@ import { UsersTokenService } from './users-token.service';
 import { MulterFile } from '@common/types';
 
 import { UsersHashService } from './users-hash.service';
-import { CloudinaryService } from 'src/libs';
+import { CloudinaryService, SendGridService } from 'src/libs';
 import {
   AlreadyExistUserException,
   IncompleteRolesException,
@@ -33,6 +33,7 @@ export class UsersService {
     private readonly usersTokenService: UsersTokenService,
     private readonly userHashService: UsersHashService,
     private readonly cloudinaryServices: CloudinaryService,
+    private readonly sendGridServices: SendGridService,
     private readonly rolesService: RolesService,
     private readonly medalsService: MedalsService,
   ) {}
@@ -184,6 +185,25 @@ export class UsersService {
     });
   }
 
+  async requestHelp(user: User, professionalId: number, aboutUser: string) {
+    const professional = await this.findById(professionalId);
+    if (!(professional && this.hasProfessionalRole(professional))) {
+      throw new UserNotFoundException();
+    }
+
+    await this.sendGridServices.sendProfessionalMail(
+      user,
+      professional,
+      aboutUser,
+    );
+    await this.usersRepository.update({
+      ...professional,
+      contacts: [...professional?.contacts, user],
+    });
+
+    return { message: 'Email send successfully' };
+  }
+
   async grantMedal(user: User, medalName: string) {
     if (this.medalsService.hasMedal(user, medalName)) {
       return { adquired: true };
@@ -248,5 +268,10 @@ export class UsersService {
 
   private preRevokedRoles(roles: Role[], rolesToRevoke: string[]) {
     return [...roles].filter((role) => !rolesToRevoke.includes(role.role));
+  }
+
+  private hasProfessionalRole(user: User) {
+    console.log({ user });
+    return user.roles.map((role) => role.role_id).find((role) => role === 2);
   }
 }

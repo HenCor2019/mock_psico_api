@@ -28,7 +28,7 @@ export class UsersRepository {
       where: {
         fullname: ILike(`%${fullnameRegExp}%`),
       },
-      relations: ['roles'],
+      relations: ['roles', 'contacts'],
     });
   }
 
@@ -39,7 +39,7 @@ export class UsersRepository {
       where: {
         fullname: ILike(`%${fullnameRegExp}%`),
       },
-      relations: ['roles'],
+      relations: ['roles', 'contacts'],
     });
 
     return professionals.filter((professional) =>
@@ -49,7 +49,7 @@ export class UsersRepository {
 
   async findById(userId: number) {
     return this.repository.findOne(userId, {
-      relations: ['roles', 'medals', 'testimonials', 'tips'],
+      relations: ['roles', 'medals', 'testimonials', 'tips', 'contacts'],
     });
   }
 
@@ -64,6 +64,7 @@ export class UsersRepository {
           'testimonials.categories',
           'tips',
           'tips.categories',
+          'contacts',
         ],
       },
     );

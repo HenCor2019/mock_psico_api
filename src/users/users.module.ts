@@ -7,7 +7,7 @@ import { Category, Goal, Medal, Role, Tip, User } from '@entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { CloudinaryService } from 'src/libs';
+import { CloudinaryService, SendGridService } from 'src/libs';
 import { MulterModule } from '@nestjs/platform-express';
 import { RolesService } from '@roles/services/roles.service';
 import { RolesModule } from '@roles/roles.module';
@@ -43,6 +43,7 @@ import { MedalsRepository } from '@medals/repositories/medals.repository';
     UsersHashService,
     UsersTokenService,
     CloudinaryService,
+    SendGridService,
     RolesService,
     JwtStrategy,
     JwtRefreshStrategy,
