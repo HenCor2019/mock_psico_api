@@ -1,4 +1,5 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
+import { contains } from 'class-validator';
 import {
   Column,
   Entity,
@@ -73,12 +74,12 @@ export class User {
   @JoinTable()
   medals: Medal[];
 
-  @Expose()
+  @Exclude({})
   @ManyToMany(() => User)
   @JoinTable()
   contacts: User[];
 
   constructor(partial: Partial<User>) {
-    Object.assign(this, partial);
+    Object.assign(this, { ...partial, demans: partial?.contacts.length });
   }
 }

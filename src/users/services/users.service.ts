@@ -115,12 +115,14 @@ export class UsersService {
     return await this.updateUserTokens(user);
   }
 
-  findAll(options: QueryUserDto) {
-    return this.usersRepository.find(options);
+  async findAll(options: QueryUserDto) {
+    const users = await this.usersRepository.find(options);
+    return users.map((user) => new User(user));
   }
 
-  findAllProfessionals(options: QueryUserDto) {
-    return this.usersRepository.findProfessionals(options);
+  async findAllProfessionals(options: QueryUserDto) {
+    const users = await this.usersRepository.findProfessionals(options);
+    return users.map((user) => new User(user));
   }
 
   findById(id: number) {
