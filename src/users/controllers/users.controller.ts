@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
@@ -20,6 +21,7 @@ import { UsersService } from '@users/services';
 import {
   CreateUserDto,
   LoginUserDto,
+  QueryUserDto,
   UpdateRolesDto,
   UpdateUserDto,
 } from '@users/dto';
@@ -42,8 +44,13 @@ export class UsersController {
   @ApiBearerAuth()
   @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() queryUserDto: QueryUserDto) {
+    return this.usersService.findAll(queryUserDto);
+  }
+
+  @Get('professionals')
+  findAllProfessionals(@Query() queryUserDto: QueryUserDto) {
+    return this.usersService.findAllProfessionals(queryUserDto);
   }
 
   @Get('me')

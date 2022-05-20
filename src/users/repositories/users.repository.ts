@@ -1,8 +1,8 @@
 import { Role, User } from '@entities';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDto } from '@users/dto';
-import { ILike, Repository } from 'typeorm';
+import { CreateUserDto, QueryUserDto } from '@users/dto';
+import { ILike, In, Repository } from 'typeorm';
 
 //type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
 type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
@@ -21,10 +21,30 @@ export class UsersRepository {
     private readonly repository: Repository<User>,
   ) {}
 
-  async find() {
+  async find(options: QueryUserDto) {
+    const { q } = options;
+    const fullnameRegExp = q ?? '';
     return this.repository.find({
+      where: {
+        fullname: ILike(`%${fullnameRegExp}%`),
+      },
       relations: ['roles'],
     });
+  }
+
+  async findProfessionals(options: QueryUserDto) {
+    const { q } = options;
+    const fullnameRegExp = q ?? '';
+    const professionals = await this.repository.find({
+      where: {
+        fullname: ILike(`%${fullnameRegExp}%`),
+      },
+      relations: ['roles'],
+    });
+
+    return professionals.filter((professional) =>
+      professional.roles.find((role) => role.role_id === 2),
+    );
   }
 
   async findById(userId: number) {

@@ -2,7 +2,12 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 
 import { Role, User } from '@entities';
 
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from '@users/dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  QueryUserDto,
+  UpdateUserDto,
+} from '@users/dto';
 import { UsersRepository } from '@users/repositories/users.repository';
 
 import { GoogleUser } from '@common/interfaces';
@@ -109,8 +114,12 @@ export class UsersService {
     return await this.updateUserTokens(user);
   }
 
-  findAll() {
-    return this.usersRepository.find();
+  findAll(options: QueryUserDto) {
+    return this.usersRepository.find(options);
+  }
+
+  findAllProfessionals(options: QueryUserDto) {
+    return this.usersRepository.findProfessionals(options);
   }
 
   findById(id: number) {
