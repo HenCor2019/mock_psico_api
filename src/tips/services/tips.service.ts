@@ -45,6 +45,10 @@ export class TipsService {
       }, {});
   }
 
+  async find() {
+    return this.tipsRepository.findAll();
+  }
+
   findById(id: number) {
     return this.tipsRepository.findById(id);
   }
