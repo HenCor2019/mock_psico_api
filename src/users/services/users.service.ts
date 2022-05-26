@@ -1,8 +1,9 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 
-import { Role, User } from '@entities';
+import { Category, Role, User } from '@entities';
 
 import {
+  CreateProfessionalDto,
   CreateUserDto,
   LoginUserDto,
   QueryUserDto,
@@ -25,6 +26,9 @@ import {
 } from '@common/exceptions';
 import { RolesService } from '@roles/services/roles.service';
 import { MedalsService } from '@medals/services/medals.service';
+import { CategoriesService } from '@categories/services/categories.service';
+import { Request } from 'src/entities/Request.entity';
+import { Roles } from '@common/enums';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +40,7 @@ export class UsersService {
     private readonly sendGridServices: SendGridService,
     private readonly rolesService: RolesService,
     private readonly medalsService: MedalsService,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   async create(createUserDto: CreateUserDto, file: MulterFile) {
@@ -123,6 +128,59 @@ export class UsersService {
   async findAllProfessionals(options: QueryUserDto) {
     const users = await this.usersRepository.findProfessionals(options);
     return users.map((user) => new User(user));
+  }
+
+  async findRequests() {
+    const requests = await this.usersRepository.findRequests();
+    return requests.map((request) => new Request(request));
+  }
+
+  async convertProfessional(userId: number) {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+    const userRequest = await this.usersRepository.findUserRequest(user);
+
+    if (!userRequest) {
+      throw new UserNotFoundException();
+    }
+
+    const professionalRole = await this.rolesService.findByName(
+      Roles.PSYCHOLOGIST,
+    );
+    const userRoles = this.insertRoleIfNoExist(user.roles, professionalRole);
+
+    await this.usersRepository.update({
+      ...user,
+      specialities: this.mergeSpecialities(
+        user.specialities,
+        userRequest.specialities,
+      ),
+      roles: userRoles,
+      professionalSlogan: userRequest.professionalSlogan,
+    });
+
+    // this.usersRepository.deleteRequest(userRequest);
+    return userRequest;
+  }
+
+  async requestConvertProfessional(
+    user: User,
+    createProfessionalDto: CreateProfessionalDto,
+    file: MulterFile,
+  ) {
+    const { url } = await this.cloudinaryServices.upload(file.path);
+    const categories = await this.categoriesService.findManyById(
+      createProfessionalDto.specialities,
+    );
+
+    return this.usersRepository.saveRequest({
+      userId: user,
+      specialities: categories,
+      professionalSlogan: createProfessionalDto.professionalSlogan,
+      cv: url,
+    });
   }
 
   findById(id: number) {
@@ -275,5 +333,25 @@ export class UsersService {
   private hasProfessionalRole(user: User) {
     console.log({ user });
     return user.roles.map((role) => role.role_id).find((role) => role === 2);
+  }
+
+  private mergeSpecialities(
+    previousSpecialities: Category[],
+    newSpecialities: Category[],
+  ) {
+    return [...previousSpecialities, ...newSpecialities].filter(
+      (speciality, index) =>
+        previousSpecialities
+          .map((sp) => sp.name)
+          .findIndex((s) => s === speciality.name) === index,
+    );
+  }
+
+  private insertRoleIfNoExist(roles: Role[], newRole: Role) {
+    const allRoles = [...roles, newRole];
+    return allRoles.filter(
+      (role, index) =>
+        allRoles.findIndex((r) => r.role === role.role) === index,
+    );
   }
 }

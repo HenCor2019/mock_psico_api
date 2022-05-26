@@ -9,6 +9,7 @@ export function NotDuplicates(...args: string[]) {
       constraints: [...args],
       validator: {
         validate(value: number[], args: ValidationArguments) {
+          console.log({ value });
           if (!value) return false;
           if (!value?.length) return true;
           return (

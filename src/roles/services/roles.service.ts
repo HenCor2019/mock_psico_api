@@ -13,4 +13,8 @@ export class RolesService {
   async findMany(roles: string[]) {
     return this.rolesRepository.find(...roles);
   }
+
+  async findByName(name: string) {
+    return this.rolesRepository.findByName(name);
+  }
 }

@@ -20,6 +20,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { UsersService } from '@users/services';
 import {
   CreateEmailUserDto,
+  CreateProfessionalDto,
   CreateUserDto,
   LoginUserDto,
   QueryUserDto,
@@ -52,6 +53,76 @@ export class UsersController {
   @Get('professionals')
   findAllProfessionals(@Query() queryUserDto: QueryUserDto) {
     return this.usersService.findAllProfessionals(queryUserDto);
+  }
+
+  @Get('professionals/request')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  professionalRequest() {
+    return this.usersService.findRequests();
+  }
+
+  @Patch(':userId/professional')
+  @ApiBearerAuth()
+  @Roles(AppRoles.MODERATOR, AppRoles.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  convertProfessional(@Param('userId', ParseIntPipe) userId: number) {
+    return this.usersService.convertProfessional(userId);
+  }
+
+  @Post('me/professionals/request')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBearerAuth()
+  @Roles(
+    AppRoles.USER,
+    AppRoles.MODERATOR,
+    AppRoles.PSYCHOLOGIST,
+    AppRoles.ADMIN,
+  )
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        specialities: { type: 'array', description: 'User categories' },
+        professionalSlogan: {
+          type: 'string',
+          description: 'Professional slogan',
+        },
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'User cv',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: (req, file, callback) => {
+        if (!file) {
+          return callback(new FileFormatException(), false);
+        }
+
+        if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+          return callback(new FileFormatException(), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  requestConvertProfessional(
+    @User() user: UserEntity,
+    @Body() createProfessionalDto: CreateProfessionalDto,
+    @UploadedFile('file', new ValidationFilePipe()) file: MulterFile,
+  ) {
+    return this.usersService.requestConvertProfessional(
+      user,
+      createProfessionalDto,
+      file,
+    );
   }
 
   @Get('me')

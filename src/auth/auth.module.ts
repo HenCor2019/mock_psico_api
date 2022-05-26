@@ -17,6 +17,9 @@ import { AuthService } from './services/auth.service';
 import { AuthController } from './controllers/auth.controller';
 import { CloudinaryService, SendGridService } from 'src/libs';
 import { MedalsModule } from '@medals/medals.module';
+import { CategoriesService } from '@categories/services/categories.service';
+import { CategoriesRepository } from '@categories/repositories/categories.repository';
+import { CategoriesModule } from '@categories/categories.module';
 
 @Module({
   imports: [
@@ -25,6 +28,7 @@ import { MedalsModule } from '@medals/medals.module';
     UsersModule,
     RolesModule,
     MedalsModule,
+    CategoriesModule,
   ],
   controllers: [AuthController],
   providers: [

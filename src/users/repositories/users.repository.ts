@@ -1,10 +1,10 @@
-import { Role, User } from '@entities';
+import { Category, Role, User } from '@entities';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, QueryUserDto } from '@users/dto';
-import { ILike, In, Repository } from 'typeorm';
+import { Request } from 'src/entities/Request.entity';
+import { ILike, Repository } from 'typeorm';
 
-//type UserToSave = CreateUserDto & { hashPassword: string; photo: string };
 type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
   ? Omit<T, 'password'>
   : never) & {
@@ -19,6 +19,8 @@ export class UsersRepository {
   constructor(
     @InjectRepository(User)
     private readonly repository: Repository<User>,
+    @InjectRepository(Request)
+    private readonly requestRepository: Repository<Request>,
   ) {}
 
   async find(options: QueryUserDto) {
@@ -49,7 +51,14 @@ export class UsersRepository {
 
   async findById(userId: number) {
     return this.repository.findOne(userId, {
-      relations: ['roles', 'medals', 'testimonials', 'tips', 'contacts'],
+      relations: [
+        'roles',
+        'medals',
+        'testimonials',
+        'tips',
+        'contacts',
+        'specialities',
+      ],
     });
   }
 
@@ -65,6 +74,7 @@ export class UsersRepository {
           'tips',
           'tips.categories',
           'contacts',
+          'specialities',
         ],
       },
     );
@@ -89,6 +99,36 @@ export class UsersRepository {
     });
 
     return this.repository.save(newUser);
+  }
+
+  async saveRequest(requestToSave: {
+    userId: User;
+    specialities: Category[];
+    professionalSlogan: string;
+    cv: string;
+  }) {
+    const newRequest = this.requestRepository.create({
+      ...requestToSave,
+    });
+
+    return this.requestRepository.save(newRequest);
+  }
+
+  async findRequests() {
+    return this.requestRepository.find({
+      relations: ['userId', 'specialities'],
+    });
+  }
+
+  async findUserRequest(userId: User) {
+    return this.requestRepository.findOne(
+      { userId: userId },
+      { relations: ['specialities'] },
+    );
+  }
+
+  async deleteRequest(requestToDelete: Request) {
+    this.requestRepository.remove(requestToDelete);
   }
 
   async update(userToUpdate: User) {

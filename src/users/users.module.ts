@@ -16,6 +16,10 @@ import { JwtRefreshStrategy, JwtStrategy } from '@common/strategies';
 import { MedalsModule } from '@medals/medals.module';
 import { MedalsService } from '@medals/services/medals.service';
 import { MedalsRepository } from '@medals/repositories/medals.repository';
+import { CategoriesService } from '@categories/services/categories.service';
+import { Request } from 'src/entities/Request.entity';
+import { CategoriesModule } from '@categories/categories.module';
+import { CategoriesRepository } from '@categories/repositories/categories.repository';
 
 @Module({
   imports: [
@@ -32,9 +36,10 @@ import { MedalsRepository } from '@medals/repositories/medals.repository';
       },
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([User, Role, Category, Tip, Goal, Medal]),
+    TypeOrmModule.forFeature([User, Role, Category, Tip, Goal, Medal, Request]),
     RolesModule,
     MedalsModule,
+    CategoriesModule,
   ],
   controllers: [UsersController],
   providers: [
@@ -49,6 +54,8 @@ import { MedalsRepository } from '@medals/repositories/medals.repository';
     JwtRefreshStrategy,
     MedalsService,
     MedalsRepository,
+    CategoriesService,
+    CategoriesRepository,
   ],
   exports: [UsersService, UsersRepository],
 })

@@ -21,4 +21,8 @@ export class CategoriesRepository {
   async findMany(categories: string[]) {
     return this.categoryRepository.find({ name: In(categories) });
   }
+
+  async findManyById(categories: number[]) {
+    return this.categoryRepository.find({ categoryId: In(categories) });
+  }
 }
