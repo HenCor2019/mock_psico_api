@@ -27,7 +27,7 @@ export class TestimonialsRepository {
 
   findAll() {
     return this.testimonialsRepository.find({
-      relations: ['userId', 'categories'],
+      relations: ['userId', 'categories', 'userId.contacts'],
     });
   }
 
