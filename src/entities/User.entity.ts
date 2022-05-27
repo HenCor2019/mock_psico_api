@@ -94,6 +94,6 @@ export class User {
   specialities: Category[];
 
   constructor(partial: Partial<User>) {
-    Object.assign(this, { ...partial, demans: partial?.contacts.length });
+    Object.assign(this, { ...partial, demans: partial?.contacts?.length ?? 0 });
   }
 }

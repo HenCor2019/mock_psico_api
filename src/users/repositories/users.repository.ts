@@ -1,9 +1,15 @@
+import { Roles } from '@common/enums';
 import { Category, Role, User } from '@entities';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, QueryUserDto } from '@users/dto';
 import { Request } from 'src/entities/Request.entity';
-import { ILike, In, Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
+
+const queryRoles = {
+  user: Roles.USER,
+  professional: Roles.PSYCHOLOGIST,
+};
 
 type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
   ? Omit<T, 'password'>
@@ -30,12 +36,16 @@ export class UsersRepository {
   async find(options: QueryUserDto) {
     const { q } = options;
     const fullnameRegExp = q ?? '';
-    return this.repository.find({
+    const users = await this.repository.find({
       where: {
         fullname: ILike(`%${fullnameRegExp}%`),
       },
       relations: ['roles', 'contacts', 'specialities'],
     });
+
+    return users.filter((user) =>
+      user.roles.map((role) => role.role).includes(queryRoles[options.role]),
+    );
   }
 
   async findProfessionals(options: QuerySearchUser) {

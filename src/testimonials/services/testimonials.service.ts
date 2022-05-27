@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@entities';
+import { Testimony, User } from '@entities';
 
 import { CategoriesService } from '@categories/services/categories.service';
 
@@ -35,18 +35,26 @@ export class TestimonialsService {
 
   async findAll() {
     const testimonials = await this.testimonialsRepository.findAll();
-    return testimonials.reduce((acc, testimonial) => {
-      const { categories, ...rest } = testimonial;
-      categories.forEach((category) => {
-        if (acc[category.name]) {
-          acc[category.name] = [...acc[category.name], rest];
-        } else {
-          acc[category.name] = [rest];
-        }
-      });
+    return testimonials
+      .map(
+        (testimonial) =>
+          new Testimony({
+            ...testimonial,
+            userId: new User(testimonial.userId),
+          }),
+      )
+      .reduce((acc, testimonial) => {
+        const { categories, ...rest } = testimonial;
+        categories.forEach((category) => {
+          if (acc[category.name]) {
+            acc[category.name] = [...acc[category.name], rest];
+          } else {
+            acc[category.name] = [rest];
+          }
+        });
 
-      return { ...acc };
-    }, {});
+        return { ...acc };
+      }, {});
   }
 
   async findById(id: number) {

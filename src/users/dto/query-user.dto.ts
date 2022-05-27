@@ -19,4 +19,14 @@ export class QueryUserDto {
   @IsString()
   @IsOptional()
   category?: string;
+
+  @ApiProperty({
+    name: 'role',
+    type: 'string',
+    required: false,
+    description: 'The pattern for search the user',
+  })
+  @IsString()
+  @IsOptional()
+  role = 'user';
 }
