@@ -10,4 +10,13 @@ export class QueryUserDto {
   @IsString()
   @IsOptional()
   q?: string;
+
+  @ApiProperty({
+    name: 'category',
+    required: false,
+    description: 'The category to filter users',
+  })
+  @IsString()
+  @IsOptional()
+  category?: string;
 }

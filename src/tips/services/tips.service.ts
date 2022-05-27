@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTipDto, UpdateTipDto } from '@tips/dto';
 import { TipsRepository } from '@tips/repositories/tips.repository';
-import { Tip, User } from '@entities';
+import { User } from '@entities';
 import { CategoriesService } from '@categories/services/categories.service';
 
 @Injectable()

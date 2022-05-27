@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, QueryUserDto } from '@users/dto';
 import { Request } from 'src/entities/Request.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 
 type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
   ? Omit<T, 'password'>
@@ -13,6 +13,10 @@ type UserToSave<T = CreateUserDto> = (T extends CreateUserDto
   roles: Role[];
   displayName: string;
 };
+
+type QuerySearchUser<T = QueryUserDto> = (T extends QueryUserDto
+  ? Omit<T, 'category'>
+  : never) & { category: Category };
 
 @Injectable()
 export class UsersRepository {
@@ -25,27 +29,30 @@ export class UsersRepository {
 
   async find(options: QueryUserDto) {
     const { q } = options;
-    const fullnameRegExp = q ?? '';
     return this.repository.find({
       where: {
-        fullname: ILike(`%${fullnameRegExp}%`),
+        fullname: q ?? '',
       },
-      relations: ['roles', 'contacts'],
+      relations: ['roles', 'contacts', 'specialities'],
     });
   }
 
-  async findProfessionals(options: QueryUserDto) {
-    const { q } = options;
+  async findProfessionals(options: QuerySearchUser) {
+    const { q, category } = options;
     const fullnameRegExp = q ?? '';
     const professionals = await this.repository.find({
       where: {
         fullname: ILike(`%${fullnameRegExp}%`),
       },
-      relations: ['roles', 'contacts'],
+      relations: ['roles', 'contacts', 'specialities'],
     });
 
-    return professionals.filter((professional) =>
-      professional.roles.find((role) => role.role_id === 2),
+    return professionals.filter(
+      (professional) =>
+        professional.roles.find((role) => role.role_id === 2) &&
+        professional.specialities.find(({ name }) =>
+          category ? name === category.name : true,
+        ),
     );
   }
 

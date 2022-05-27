@@ -10,6 +10,10 @@ export class CategoriesService {
     return this.categoriesRepository.findAll();
   }
 
+  findByName(name: string) {
+    return this.categoriesRepository.findByName(name);
+  }
+
   async findMany(categoriesToFind: string[]) {
     const categories = await this.categoriesRepository.findMany(
       categoriesToFind,

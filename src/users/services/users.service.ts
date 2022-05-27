@@ -126,8 +126,25 @@ export class UsersService {
   }
 
   async findAllProfessionals(options: QueryUserDto) {
-    const users = await this.usersRepository.findProfessionals(options);
-    return users.map((user) => new User(user));
+    const category = await this.categoriesService.findByName(options.category);
+    const users = await this.usersRepository.findProfessionals({
+      ...options,
+      category,
+    });
+    return users
+      .map((user) => new User(user))
+      .reduce((acc, tip) => {
+        const { specialities, ...rest } = tip;
+        specialities.forEach((category) => {
+          if (acc[category.name]) {
+            acc[category.name] = [...acc[category.name], rest];
+          } else {
+            acc[category.name] = [rest];
+          }
+        });
+
+        return { ...acc };
+      }, {});
   }
 
   async findRequests() {
@@ -161,7 +178,7 @@ export class UsersService {
       professionalSlogan: userRequest.professionalSlogan,
     });
 
-    // this.usersRepository.deleteRequest(userRequest);
+    await this.usersRepository.deleteRequest(userRequest);
     return userRequest;
   }
 
@@ -331,7 +348,6 @@ export class UsersService {
   }
 
   private hasProfessionalRole(user: User) {
-    console.log({ user });
     return user.roles.map((role) => role.role_id).find((role) => role === 2);
   }
 
@@ -339,9 +355,10 @@ export class UsersService {
     previousSpecialities: Category[],
     newSpecialities: Category[],
   ) {
-    return [...previousSpecialities, ...newSpecialities].filter(
+    const specialities = [...previousSpecialities, ...newSpecialities];
+    return specialities.filter(
       (speciality, index) =>
-        previousSpecialities
+        specialities
           .map((sp) => sp.name)
           .findIndex((s) => s === speciality.name) === index,
     );
