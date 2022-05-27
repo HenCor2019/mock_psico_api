@@ -29,9 +29,10 @@ export class UsersRepository {
 
   async find(options: QueryUserDto) {
     const { q } = options;
+    const fullnameRegExp = q ?? '';
     return this.repository.find({
       where: {
-        fullname: q ?? '',
+        fullname: ILike(`%${fullnameRegExp}%`),
       },
       relations: ['roles', 'contacts', 'specialities'],
     });
