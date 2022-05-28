@@ -8,6 +8,10 @@ import { User } from '@entities';
 export class MedalsService {
   constructor(private readonly medalsRepository: MedalsRepository) {}
 
+  async find() {
+    return this.medalsRepository.find();
+  }
+
   async findMany(medalsId: number[]) {
     const medals = await this.medalsRepository.findMany(medalsId);
     if (medals.length !== medalsId.length) {

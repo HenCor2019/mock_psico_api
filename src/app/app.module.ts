@@ -1,6 +1,7 @@
 import { AuthModule } from '@auth/auth.module';
 import { BinnaclesModule } from '@binnacles/binnacles.module';
 import { GoalsModule } from '@goals/goals.module';
+import { MedalsModule } from '@medals/medals.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,6 +24,7 @@ const config = databaseConfig();
     BinnaclesModule,
     TipsModule,
     GoalsModule,
+    MedalsModule,
   ],
 })
 export class AppModule {}

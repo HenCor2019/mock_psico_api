@@ -10,6 +10,10 @@ export class MedalsRepository {
     private readonly medalsRepository: Repository<Medal>,
   ) {}
 
+  find() {
+    return this.medalsRepository.find();
+  }
+
   findMany(medalsId: number[]) {
     return this.medalsRepository.find({
       where: {
