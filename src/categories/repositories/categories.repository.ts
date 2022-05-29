@@ -14,6 +14,10 @@ export class CategoriesRepository {
     return this.categoryRepository.find();
   }
 
+  async findById(id: number) {
+    return this.categoryRepository.findOne({ categoryId: id });
+  }
+
   async findByName(category: string) {
     return this.categoryRepository.findOne({ name: category });
   }

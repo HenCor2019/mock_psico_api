@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsInt, IsOptional, IsString } from 'class-validator';
 
 export class QueryUserDto {
   @ApiProperty({
@@ -29,4 +29,14 @@ export class QueryUserDto {
   @IsString()
   @IsOptional()
   role = 'user';
+
+  @ApiProperty({
+    name: 'qt',
+    type: 'number',
+    required: false,
+    description: 'The category to filter users',
+  })
+  @IsInt()
+  @IsOptional()
+  quantity = 6;
 }

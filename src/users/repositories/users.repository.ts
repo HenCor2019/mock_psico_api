@@ -49,7 +49,7 @@ export class UsersRepository {
   }
 
   async findProfessionals(options: QuerySearchUser) {
-    const { q, category } = options;
+    const { q } = options;
     const fullnameRegExp = q ?? '';
     const professionals = await this.repository.find({
       where: {
@@ -58,12 +58,8 @@ export class UsersRepository {
       relations: ['roles', 'contacts', 'specialities'],
     });
 
-    return professionals.filter(
-      (professional) =>
-        professional.roles.find((role) => role.role_id === 2) &&
-        professional.specialities.find(({ name }) =>
-          category ? name === category.name : true,
-        ),
+    return professionals.filter((professional) =>
+      professional.roles.find((role) => role.role_id === 2),
     );
   }
 

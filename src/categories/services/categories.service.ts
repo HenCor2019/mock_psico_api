@@ -37,4 +37,10 @@ export class CategoriesService {
 
     return categories;
   }
+
+  async findRandom() {
+    return this.categoriesRepository.findById(
+      Math.trunc(Math.random() * 4 + 1),
+    );
+  }
 }

@@ -126,25 +126,32 @@ export class UsersService {
   }
 
   async findAllProfessionals(options: QueryUserDto) {
-    const category = await this.categoriesService.findByName(options.category);
+    const category = options.category
+      ? await this.categoriesService.findByName(options.category)
+      : await this.categoriesService.findRandom();
+
     const users = await this.usersRepository.findProfessionals({
       ...options,
       category,
     });
-    return users
-      .map((user) => new User(user))
-      .reduce((acc, tip) => {
-        const { specialities, ...rest } = tip;
-        specialities.forEach((category) => {
-          if (acc[category.name]) {
-            acc[category.name] = [...acc[category.name], rest];
-          } else {
-            acc[category.name] = [rest];
-          }
-        });
 
-        return { ...acc };
-      }, {});
+    const specialists = category
+      ? users.filter((user) =>
+          user.specialities.map((s) => s.name).includes(category.name),
+        )
+      : [...users];
+
+    const recommendations = category
+      ? users.filter(
+          (user) =>
+            !user.specialities.map((s) => s.name).includes(category.name),
+        )
+      : [];
+
+    return {
+      specialists: specialists.slice(0, options.quantity),
+      recommendations: recommendations.slice(0, options.quantity),
+    };
   }
 
   async findRequests() {
