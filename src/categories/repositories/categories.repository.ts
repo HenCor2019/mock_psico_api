@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from 'src/entities';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 
 @Injectable()
 export class CategoriesRepository {
@@ -19,7 +19,9 @@ export class CategoriesRepository {
   }
 
   async findByName(category: string) {
-    return this.categoryRepository.findOne({ name: category });
+    return this.categoryRepository.findOne({
+      name: ILike(`%${category}%`),
+    });
   }
 
   async findMany(categories: string[]) {
