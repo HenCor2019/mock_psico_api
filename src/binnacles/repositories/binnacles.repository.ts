@@ -51,4 +51,8 @@ export class BinnaclesRepository {
   findMoodById(id: number) {
     return this.moodsRepository.findOne({ moodId: id });
   }
+
+  findMoods() {
+    return this.moodsRepository.find();
+  }
 }

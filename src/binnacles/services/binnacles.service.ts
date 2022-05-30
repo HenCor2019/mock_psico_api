@@ -11,6 +11,9 @@ import {
 export class BinnaclesService {
   constructor(private readonly binnacleRepository: BinnaclesRepository) {}
 
+  async findMoods() {
+    return this.binnacleRepository.findMoods();
+  }
   async create(user: User, createBinnacleDto: CreateBinnacleDto) {
     const { moodId, ...binnacleToCreate } = createBinnacleDto;
     const mood = await this.binnacleRepository.findMoodById(moodId);

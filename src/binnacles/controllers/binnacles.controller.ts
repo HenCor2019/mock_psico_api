@@ -35,6 +35,11 @@ export class BinnaclesController {
     return this.binnaclesService.create(user, createBinnacleDto);
   }
 
+  @Get('moods')
+  findMoods() {
+    return this.binnaclesService.findMoods();
+  }
+
   @Get('me/binnacles')
   @ApiBearerAuth()
   @Roles(AppRoles.USER, AppRoles.MODERATOR, AppRoles.MODERATOR, AppRoles.ADMIN)
