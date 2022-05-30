@@ -21,10 +21,10 @@ export class BinnaclesService {
       throw new MoodNotFoundException();
     }
 
-    const hasBinnacle = await this.binnacleRepository.findCurrentBinnacle();
-    if (hasBinnacle) {
-      throw new AlreadyExistBinnacleException();
-    }
+    // const hasBinnacle = await this.binnacleRepository.findCurrentBinnacle();
+    // if (hasBinnacle) {
+    //   throw new AlreadyExistBinnacleException();
+    // }
 
     return this.binnacleRepository.create({
       ...binnacleToCreate,
